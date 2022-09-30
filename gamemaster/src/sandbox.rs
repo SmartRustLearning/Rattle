@@ -762,9 +762,9 @@ impl Channel {
         use self::Channel::*;
 
         match *self {
-            Stable => "rust-stable",
-            Beta => "rust-beta",
-            Nightly => "rust-nightly",
+            Stable => "shepmaster/rust-stable",
+            Beta => "shepmaster/rust-beta",
+            Nightly => "shepmaster/rust-nightly",
         }
     }
 }
