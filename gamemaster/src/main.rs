@@ -1,5 +1,6 @@
 use crate::sandbox::{Sandbox};
 
+use std::default::Default;
 mod sandbox;
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
@@ -15,7 +16,8 @@ const DEFAULT_PORT: u16 = 5000;
 pub const PLAYGROUND_GITHUB_TOKEN: &str = "PLAYGROUND_GITHUB_TOKEN";
 pub const PLAYGROUND_UI_ROOT: &str = "PLAYGROUND_UI_ROOT";
 
-fn main() {
+#[tokio::main]
+async fn main() {
 
     // Enable info-level logging by default. env_logger's default is error only.
     let env_logger_config = env_logger::Env::default().default_filter_or("info");
@@ -23,10 +25,11 @@ fn main() {
 
     // let config = Config::from_env();
     // server_axum::serve(config);
-    let sandbox = Sandbox::new().context(SandboxCreationSnafu);
-    let res = sandbox.compile(CompileRequest::default());
+    let sandbox = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
+    let req = sandbox::CompileRequest::default();
+    let res = sandbox.compile(&req);
     
-    println!("{:?}", res);
+    println!("{:?}", res.await);
 }
 
 struct Config {
@@ -40,18 +43,20 @@ struct Config {
 
 impl Config {
     fn from_env() -> Self {
-        let root = if let Some(root) = PLAYGROUND_UI_ROOT {
-            // Ensure it appears as an absolute path in logs to help user orient
-            // themselves about what directory the PLAYGROUND_UI_ROOT
-            // configuration is interpreted relative to.
-            let mut root = PathBuf::from(root);
-            if !root.is_absolute() {
-                if let Ok(current_dir) = std::env::current_dir() {
-                    root = current_dir.join(root);
-                }
-            }
-            root
-        } else {
+        let root = 
+        // if let Some(root) = PLAYGROUND_UI_ROOT {
+        //     // Ensure it appears as an absolute path in logs to help user orient
+        //     // themselves about what directory the PLAYGROUND_UI_ROOT
+        //     // configuration is interpreted relative to.
+        //     let mut root = PathBuf::from(root);
+        //     if !root.is_absolute() {
+        //         if let Ok(current_dir) = std::env::current_dir() {
+        //             root = current_dir.join(root);
+        //         }
+        //     }
+        //     root
+        // } else 
+        {
             // Note this is `env!` (compile time) while the above is
             // `env::var_os` (run time). We know where the ui is expected to be
             // relative to the source code that the server was compiled from.
@@ -201,7 +206,7 @@ struct ErrorJson {
     error: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
 struct CompileRequest {
     target: String,
     #[serde(rename = "assemblyFlavor")]

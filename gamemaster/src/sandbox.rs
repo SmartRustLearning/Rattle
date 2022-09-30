@@ -1076,11 +1076,11 @@ pub struct MacroExpansionResponse {
 //         DOCKER_SINGLETON.lock().unwrap_or_else(|e| e.into_inner())
 //     }
 
-//     const HELLO_WORLD_CODE: &'static str = r#"
-//     fn main() {
-//         println!("Hello, world!");
-//     }
-//     "#;
+    const HELLO_WORLD_CODE: &'static str = r#"
+    fn main() {
+        println!("Hello, world!");
+    }
+    "#;
 
 //     impl Default for ExecuteRequest {
 //         fn default() -> Self {
@@ -1096,20 +1096,20 @@ pub struct MacroExpansionResponse {
 //         }
 //     }
 
-//     impl Default for CompileRequest {
-//         fn default() -> Self {
-//             CompileRequest {
-//                 target: CompileTarget::LlvmIr,
-//                 channel: Channel::Stable,
-//                 crate_type: CrateType::Binary,
-//                 mode: Mode::Debug,
-//                 tests: false,
-//                 code: HELLO_WORLD_CODE.to_string(),
-//                 edition: None,
-//                 backtrace: false,
-//             }
-//         }
-//     }
+    impl Default for CompileRequest {
+        fn default() -> Self {
+            CompileRequest {
+                target: CompileTarget::LlvmIr,
+                channel: Channel::Stable,
+                crate_type: CrateType::Binary,
+                mode: Mode::Debug,
+                tests: false,
+                code: HELLO_WORLD_CODE.to_string(),
+                edition: None,
+                backtrace: false,
+            }
+        }
+    }
 
 //     impl Default for ClippyRequest {
 //         fn default() -> Self {
