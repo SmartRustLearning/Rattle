@@ -9,6 +9,7 @@ pub struct Exercise {
     tests: Vec<Vec<u8>>,
     tasks: Vec<Vec<u8>>,
     infos: Vec<Vec<u8>>,
+    solutions: Vec<Vec<u8>>,
     config: Config,
 }
 
@@ -20,6 +21,7 @@ impl Exercise {
         let mut tests = vec![];
         let mut tasks = vec![];
         let mut infos = vec![];
+        let mut solutions: vec![];
         let mut config = None;
         /* let load_files = |s| {
             ex_dir
@@ -30,35 +32,12 @@ impl Exercise {
             let e = e.expect("TODO err");
             let text = fs::read(&e.path()).expect("problem reading file.");
             let filename = e.file_name().to_str().unwrap().to_owned();
-            match filename
-                .split(|s: char| s.is_ascii_digit() || s == '.')
-                .nth(0)
-                .unwrap()
-            {
-                "lib" => libs.push((
-                    text,
-                    filename[3..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
-                "test" => tests.push((
-                    text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
-                "task" => tasks.push((
-                    text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
-                "info" => infos.push((
-                    text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
+            match filename.split(|s: char| s.is_ascii_digit() || s == '.').nth(0).unwrap() {
+                "lib"  =>  libs.push( (text, filename[3..filename.len()-3].parse::<u8>().expect("Error parsing digit.")) ),
+                "test" => tests.push( (text, filename[4..filename.len()-3].parse::<u8>().expect("Error parsing digit.")) ),
+                "task" => tasks.push( (text, filename[4..filename.len()-3].parse::<u8>().expect("Error parsing digit.")) ),
+                "info" => infos.push( (text, filename[4..filename.len()-3].parse::<u8>().expect("Error parsing digit.")) ),
+                "solution" => solutions.push( (text, filename[8..filename.len()-3].parse::<u8>().expect("Error parsing digit."))),
                 "config" => {
                     config =
                         Some(serde_json::from_slice(&text).expect("Error parsing config file."))
@@ -70,11 +49,13 @@ impl Exercise {
         tests.sort_by_key(|(_, k)| *k);
         tasks.sort_by_key(|(_, k)| *k);
         infos.sort_by_key(|(_, k)| *k);
+        solutions.sort_by_key(|(_, k)| *k);
         Self {
             libs: libs.into_iter().map(|(x, _)| x).collect(),
             tests: tests.into_iter().map(|(x, _)| x).collect(),
             tasks: tasks.into_iter().map(|(x, _)| x).collect(),
             infos: infos.into_iter().map(|(x, _)| x).collect(),
+            solutions: solutions.into_iter().map(|(x, _)| x).collect(),
             config: config.expect("no config found"),
         }
     }
