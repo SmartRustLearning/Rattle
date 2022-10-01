@@ -25,11 +25,14 @@
         ></code-editor>
       </div>
       <div class="right">
-        <div class="task"></div>
-        <div class="btn">
-          <button class="button" @click="handleSave()">submit</button>
+        <h2 class="task-title">Your Task</h2>
+        <div class="task">
+          <div class="task-text">{{ problem }}</div>
         </div>
       </div>
+    </div>
+    <div class="btn">
+      <button class="button" @click="handleSave()">submit</button>
     </div>
   </main>
 </template>
@@ -46,6 +49,7 @@ export default {
   data() {
     return {
       value: exercises[0].starterCode,
+      problem: exercises[0].problem,
     };
   },
   mounted() {
@@ -91,6 +95,7 @@ main {
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+  box-shadow: 0 0 50px #ccc;
 }
 
 .timer {
@@ -99,6 +104,7 @@ main {
   border-radius: 4px;
   padding: 10px 20px;
   width: 150px;
+  box-shadow: 0 0 50px #ccc;
 }
 
 .timer p {
@@ -124,16 +130,31 @@ main {
 }
 
 .right {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
   width: 400px;
   margin-left: 20px;
 }
 
 .task {
-  height: 70%;
-  width: 100%;
+  padding: 15px;
   border-radius: 12px;
-  background: #272b34;
+  background: #686868;
+  box-shadow: 0 0 50px #ccc;
+}
+
+.task-title {
+  padding: 0;
+  padding-bottom: 10pt;
+  margin: 0;
+  font-size: 24pt;
+  line-height: 28pt;
+}
+
+.task-text {
+  font-size: 15pt;
+  line-height: 20pt;
+  color: white;
 }
 
 .editor {
@@ -144,14 +165,12 @@ main {
 }
 
 .btn {
-  width: auto;
-  height: auto;
   display: flex;
+  justify-content: flex-start;
 }
 
 .button {
   width: 150px;
-  margin: auto;
   margin-top: 50px;
 }
 
