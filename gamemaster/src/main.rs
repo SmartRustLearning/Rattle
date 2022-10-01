@@ -1,52 +1,30 @@
 #![deny(rust_2018_idioms)]
 use crate::sandbox::Sandbox;
-
-use std::default::Default;
 mod sandbox;
-use serde::{Deserialize, Serialize};
-use snafu::prelude::*;
-use std::{
-    convert::TryFrom,
-    net::SocketAddr,
-    path::{Path, PathBuf},
-};
-
-use axum::response::Html;
 
 use axum::{
     extract::{
         ws::{Message, WebSocket, WebSocketUpgrade},
         TypedHeader,
     },
-    http::StatusCode,
-    response::IntoResponse,
-    routing::{get, get_service},
+    response::{Html, IntoResponse},
+    routing::get,
     Router,
 };
+use snafu::prelude::*;
 
-use futures::{sink::SinkExt, stream::StreamExt};
-use std::{
-    collections::HashSet,
-    sync::{Arc, Mutex},
-};
-use tokio::sync::broadcast;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+//use futures::{sink::SinkExt, stream::StreamExt};
+// use std::{collections::HashSet, sync::Mutex};
+// use tokio::sync::broadcast;
+//use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const DEFAULT_ADDRESS: &str = "127.0.0.1:5000";
-const DEFAULT_PORT: u16 = 5000;
-pub const PLAYGROUND_GITHUB_TOKEN: &str = "PLAYGROUND_GITHUB_TOKEN";
-pub const PLAYGROUND_UI_ROOT: &str = "PLAYGROUND_UI_ROOT";
-
-struct AppState {
-    user_set: Mutex<HashSet<String>>,
-    tx: broadcast::Sender<String>,
-}
 
 #[tokio::main]
 async fn main() {
     // Enable info-level logging by default. env_logger's default is error only.
-    let env_logger_config = env_logger::Env::default().default_filter_or("info");
-    env_logger::Builder::from_env(env_logger_config).init();
+    // let env_logger_config = env_logger::Env::default().default_filter_or("info");
+    // env_logger::Builder::from_env(env_logger_config).init();
 
     let app = Router::new()
         .route("/", get(index))
@@ -55,6 +33,7 @@ async fn main() {
     let addr = DEFAULT_ADDRESS
         .parse()
         .expect("Unable to parse socket addr!");
+
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
@@ -71,7 +50,7 @@ async fn websocket_handler(
     user_agent: Option<TypedHeader<headers::UserAgent>>,
 ) -> impl IntoResponse {
     if let Some(TypedHeader(user_agent)) = user_agent {
-        println!("`{}` connected", user_agent.as_str());
+        tracing::debug!("`{}` connected", user_agent.as_str());
     }
 
     ws.on_upgrade(handle_socket)
@@ -95,7 +74,7 @@ async fn handle_socket(mut socket: WebSocket) {
                         backtrace: false,
                     };
                     let res = sb.compile(&req);
-                    //    println!("{:?}", res.await);
+                    // TODO: check if compilation was succesfull
 
                     let req = sandbox::ExecuteRequest {
                         channel: sandbox::Channel::Stable,
@@ -106,9 +85,19 @@ async fn handle_socket(mut socket: WebSocket) {
                         edition: None,
                         backtrace: false,
                     };
-                    let res = sb.execute(&req);
+                    let res = sb.execute(&req).await;
 
-                    println!("{:?}", res.await);
+                    println!("{:?}", &res);
+
+                    if socket
+                        .send(Message::Text(String::from(res.unwrap().stdout)))
+                        .await
+                        .is_err()
+                    {
+                        println!("client disconnected");
+                        return;
+                    }
+                    println!("tickp");
                 }
                 Message::Binary(_) => {
                     println!("client sent binary data");
@@ -128,19 +117,6 @@ async fn handle_socket(mut socket: WebSocket) {
             println!("client disconnected");
             return;
         }
-    }
-
-    loop {
-        if socket
-            .send(Message::Text(String::from("Hi!")))
-            .await
-            .is_err()
-        {
-            println!("client disconnected");
-            return;
-        }
-        println!("tick");
-        tokio::time::sleep(std::time::Duration::from_secs(3)).await;
     }
 }
 
