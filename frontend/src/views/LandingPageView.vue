@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="content">
-      <h1>READY FOR <br />BATTLE!</h1>
+      <h1>READY FOR <br /><span style="font-size:7.5rem;line-height:50%;">BATTLE!</span></h1>
       <img src="../assets/angryRust.png" alt="" />
     </div>
     <div class="buttonLayer">
@@ -113,10 +113,10 @@ h1 {
 }
 
 .content img {
-  width: 500px;
+  width: 550px;
   height: fit-content;
   position: relative;
-  top: 50px;
+  top: 10px;
 }
 
 .buttonLayer {
@@ -128,6 +128,12 @@ h1 {
   position: relative;
   left: 200px;
   bottom: 50px;
+}
+
+.buttonLayer .button {
+  position: relative;
+  left: 140px;
+  bottom: 130px;
 }
 
 .modalBackground {
