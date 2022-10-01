@@ -1,18 +1,34 @@
 #![deny(rust_2018_idioms)]
 use crate::sandbox::Sandbox;
-mod sandbox;
 mod logic;
+mod sandbox;
 
 use axum::{
     extract::{
         ws::{Message, WebSocket, WebSocketUpgrade},
         TypedHeader,
     },
-    response::{Html, IntoResponse},
-    routing::get,
+    response::{Html, IntoResponse, Json},
+    routing::{get, post},
     Router,
 };
+use logic::*;
+use serde::Deserialize;
+use serde_json::json;
 use snafu::prelude::*;
+use std::sync::Arc;
+
+/**
+ * Global state
+ */
+struct State {
+    matches: Vec<Match>,
+}
+
+#[derive(Deserialize)]
+struct MatchPayload {
+    username: String,
+}
 
 //use futures::{sink::SinkExt, stream::StreamExt};
 // use std::{collections::HashSet, sync::Mutex};
@@ -27,8 +43,26 @@ async fn main() {
     // let env_logger_config = env_logger::Env::default().default_filter_or("info");
     // env_logger::Builder::from_env(env_logger_config).init();
 
+    let shared_state = Arc::new(State {
+        matches: Vec::default(),
+    });
+
     let app = Router::new()
         .route("/", get(index))
+        .route(
+            "/match/find",
+            post({
+                let shared_state = Arc::clone(&shared_state);
+                move |body| find_or_create_match(body, Arc::clone(&shared_state))
+            }),
+        )
+        .route(
+            "/match/join",
+            post({
+                let shared_state = Arc::clone(&shared_state);
+                move |body| join_match(body, Arc::clone(&shared_state))
+            }),
+        )
         .route("/websocket", get(websocket_handler));
 
     let addr = DEFAULT_ADDRESS
@@ -44,6 +78,24 @@ async fn main() {
 
 async fn index() -> Html<&'static str> {
     Html("Hello World!")
+}
+
+async fn find_or_create_match(
+    Json(payload): Json<MatchPayload>,
+    state: Arc<State>,
+) -> Json<serde_json::Value> {
+    let username = payload.username;
+
+    Json(json!({ "new_username": username }))
+}
+
+async fn join_match(
+    Json(payload): Json<MatchPayload>,
+    state: Arc<State>,
+) -> Json<serde_json::Value> {
+    let username = payload.username;
+
+    Json(json!({ "new_username": username }))
 }
 
 async fn websocket_handler(
@@ -93,7 +145,7 @@ async fn handle_socket(mut socket: WebSocket) {
                     if socket
                         .send(Message::Text(
                             // String::from(res.unwrap().stdout)
-                            serde_json::json!(res.unwrap())
+                            json!(res.unwrap()).to_string(),
                         ))
                         .await
                         .is_err()

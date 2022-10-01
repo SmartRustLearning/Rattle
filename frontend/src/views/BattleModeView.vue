@@ -1,6 +1,6 @@
 <template>
   <main>
-    <p>aasas</p>
+    <h1>BATTLE</h1>
   </main>
 </template>
 
@@ -10,6 +10,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>
