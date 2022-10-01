@@ -8,6 +8,14 @@ A [VueJS](https://vuejs.org/) frontend communicates with an [Iron](https://githu
 backend, originally from the [Rust Playground](https://github.com/integer32llc/rust-playground). [Docker][docker] containers are used to provide the various
 compilers and tools as well as to help isolate them. 
 
+### Logic
+
+A "game" or exercise is really just a `lib.rs` file which contains unfinished code; a `test.rs` file used to ensure the submitted code compiles as expected and a `config.json` file to store information about each exercise and useful metadata for the front-end. 
+
+When a player hits "Submit", their code gets sent to the server and appended to the tests for that exercise. 
+
+A player is only successful if they submit code that passes the tests. The compiler will run in test mode to ensure this. 
+
 ## How the game works
 
 The game assumes 2 players are online and ready to play. Following this:
