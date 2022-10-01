@@ -966,7 +966,7 @@ impl BacktraceRequest for ExecuteRequest {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ExecuteResponse {
     pub success: bool,
     pub stdout: String,
