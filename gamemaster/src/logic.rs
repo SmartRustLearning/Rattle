@@ -37,15 +37,23 @@ impl Exercise {
             {
                 "lib" => libs.push((
                     text,
-                    filename[3..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
+                    if filename.len() > 6 {
+                        filename[3..filename.len() - 3]
+                            .parse::<u8>()
+                            .expect("Error parsing digit.")
+                    } else {
+                        0
+                    }
                 )),
                 "test" => tests.push((
                     text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
+                    if filename.len() > 7 {
+                        filename[4..filename.len() - 3]
+                            .parse::<u8>()
+                            .expect("Error parsing digit.")
+                    } else {
+                        0
+                    }
                 )),
                 // "task" => tasks.push((
                 //     text,
