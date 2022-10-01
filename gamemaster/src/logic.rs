@@ -3,8 +3,21 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{Bytes, Read};
 use std::str::from_utf8;
+use std::sync::Exclusive;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::Sender;
+
+pub fn get_exercises() -> Vec<(String, usize)> {
+    let ex_dir = std::fs::read_dir(std::path::Path::new("./exercises")).expect("Exercise directory does not exist.");
+    let mut exercises: Vec<(String, usize)> = ex_dir.filter(
+        |e| e.as_ref().expect("Err TODO").file_type().expect("Filetype problem in directory.").is_dir() && e.as_ref().unwrap().file_name().to_str().unwrap().starts_with("ex")
+    ).map(|e| {
+        let n = e.as_ref().unwrap().file_name().to_str().unwrap().split('.').nth(0).unwrap()[2..].parse::<usize>().unwrap();
+        (e.unwrap().path().to_str().unwrap().to_owned(), n.clone())
+    }).collect();
+    exercises.sort_by_key(|(_,n)| *n);
+    exercises
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Exercise {
