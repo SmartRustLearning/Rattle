@@ -10,7 +10,7 @@ export const timer = function (end, onTick, onComplete) {
   };
 
   var tick = function () {
-    if (timeLeft > 0) {
+    if (timeLeft >= 0) {
       var time = timeLeft;
       var days = Math.floor(time / timeAPI.DAYS);
       time %= timeAPI.DAYS;

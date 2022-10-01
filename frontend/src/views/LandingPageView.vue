@@ -1,17 +1,31 @@
 <template>
   <main>
     <div class="content">
-      <h1>READY FOR <br/>BATTLE!</h1>
-      <img src="../assets/angryRust.png" alt="">
+      <h1>READY FOR <br />BATTLE!</h1>
+      <img src="../assets/angryRust.png" alt="" />
     </div>
     <div class="buttonLayer">
-        <button class="button" style="vertical-align:middle; font-size:2rem; font-weight:bold;" @click="openModal()">start</button>
+      <button
+        class="button"
+        style="vertical-align: middle; font-size: 2rem; font-weight: bold"
+        @click="openModal()"
+      >
+        start
+      </button>
     </div>
-    <div @click="modal=false" v-if="modal" style="width:100vw; height:100vh;">
+    <div
+      @click="modal = false"
+      v-if="modal"
+      style="width: 100vw; height: 100vh"
+    >
       <div class="modalBackground" @click.stop>
         <div class="modal">
-          <h2 style="margin-top:80px; font-size:2.4rem;">Game is loading...</h2>
-          <div style="display: flex;"><img src="../assets/Crab-unscreen.gif" alt=""></div>
+          <h2 style="margin-top: 80px; font-size: 2.4rem">
+            Game is loading...
+          </h2>
+          <div style="display: flex">
+            <img src="../assets/Crab-unscreen.gif" alt="" />
+          </div>
         </div>
       </div>
     </div>
@@ -24,21 +38,21 @@ export default {
     modal: false,
   }),
   methods: {
-    openModal(){
-        this.modal = !this.modal;
-    }
+    openModal() {
+      this.modal = !this.modal;
+    },
   },
-}
+};
 </script>
 
 <style scoped>
-main{
+main {
   width: 100%;
   height: 100%;
   margin: 0;
   margin-top: 100px;
 }
-.content{
+.content {
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -46,30 +60,30 @@ main{
   margin: 0;
 }
 
-h1{
+h1 {
   font-size: 5rem;
   margin: 0;
 }
 
-.content img{
+.content img {
   width: 500px;
   height: fit-content;
   position: relative;
   top: 50px;
 }
 
-.buttonLayer{
+.buttonLayer {
   text-align: center;
   display: flex;
 }
 
-.buttonLayer .button{
+.buttonLayer .button {
   position: relative;
   left: 200px;
   bottom: 50px;
 }
 
-.modalBackground{
+.modalBackground {
   background: #00000079;
   position: absolute;
   display: flex;
@@ -82,14 +96,13 @@ h1{
   text-align: center;
 }
 
-.modal{
+.modal {
   width: 600px;
   height: 400px;
   border-radius: 12px;
   background: white;
 }
-
-.modal img{
+.modal img {
   width: 500px;
   position: relative;
   top: -75px;

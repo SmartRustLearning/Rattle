@@ -2,8 +2,8 @@
   <main>
     <div class="infoBar">
       <div class="profile">
-        <div class="profilePic"></div>
-        <p>Player 1</p>
+        <img class="profilePic" :src="player.picture" />
+        <p>{{ player.name }}</p>
       </div>
       <div class="timer">
         <p>
@@ -14,8 +14,8 @@
         </p>
       </div>
       <div class="profile">
-        <div class="profilePic"></div>
-        <p>Player 2</p>
+        <img class="profilePic" :src="opponent.picture" />
+        <p>{{ opponent.name }}</p>
       </div>
     </div>
     <div class="content">
@@ -39,6 +39,22 @@
     <div class="btn">
       <button class="button" @click="handleSave()">submit</button>
     </div>
+    <div
+      @click="modal = false"
+      v-if="modal"
+      style="width: 100vw; height: 100vh"
+    >
+      <div class="modalBackground" @click.stop>
+        <div class="modal">
+          <h2 style="margin-top: 80px; font-size: 2.4rem">
+            {{ explanation }}
+          </h2>
+          <div style="display: flex">
+            <img src="../assets/Crab-unscreen.gif" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -48,6 +64,8 @@ import { exercises } from "../data/exercises";
 import { timer } from "../util/countdown";
 import { padZero } from "../util/numbers";
 
+import { player, opponents } from "../data/players";
+
 const duration = exercises[0].duration;
 
 function handleSave() {
@@ -56,6 +74,7 @@ function handleSave() {
     timeLeft,
     date: new Date(),
   });
+  this.openModal();
   this.countdown?.abort();
 }
 
@@ -64,17 +83,35 @@ export default {
     return {
       value: exercises[0].starterCode,
       problem: exercises[0].problem,
+      explanation: exercises[0].explanation,
       time: {
         millis: "00",
         seconds: "00",
         minutes: "00",
       },
       countdown: undefined,
+      modal: false,
+      opponent: {
+        name: "???",
+        picture: undefined,
+      },
+      player: {
+        name: player.name,
+        picture: player.picture,
+      },
     };
   },
   mounted() {
     // TODO: Request match data from backend
     // Send start time!
+
+    // find opponent randomly
+    const randomOpponent =
+      opponents[Math.floor(0 + Math.random() * (4 - 0 + 1))];
+    this.opponent = {
+      name: randomOpponent.name,
+      picture: randomOpponent.picture,
+    };
 
     const endTime = new Date(new Date().getTime() + 1000 * duration);
     this.countdown = timer(
@@ -88,6 +125,7 @@ export default {
         console.log("time over -> open modal to solution screen", {
           date: new Date(),
         });
+        this.openModal();
         this.countdown?.abort();
       }
     );
@@ -97,6 +135,9 @@ export default {
   },
   methods: {
     handleSave,
+    openModal() {
+      this.modal = !this.modal;
+    },
   },
   components: {
     CodeEditor,
@@ -120,7 +161,8 @@ main {
 
 .profile {
   display: flex;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .profile p {
@@ -129,8 +171,8 @@ main {
 }
 
 .profilePic {
-  height: 60px;
-  width: 60px;
+  height: 80px;
+  width: 80px;
   margin: auto;
   background-color: #bbb;
   border-radius: 50%;
@@ -214,22 +256,23 @@ main {
   margin-top: 50px;
 }
 
-#editing,
-#highlighting {
-  /* Both elements need the same text and space styling so they are directly on top of each other */
-  margin: 10px;
-  padding: 10px;
-  border: 0;
-  width: calc(100% - 32px);
-  height: 150px;
+.modalBackground {
+  background: #00000079;
+  position: absolute;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-#editing,
-#highlighting,
-#highlighting * {
-  /* Also add text styles to highlighting tokens */
-  font-size: 15pt;
-  font-family: monospace;
-  line-height: 20pt;
+.modal {
+  width: 600px;
+  height: 400px;
+  border-radius: 12px;
+  background: white;
 }
 </style>
