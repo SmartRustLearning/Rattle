@@ -78,7 +78,7 @@ main {
 
 .profile {
   display: flex;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
 }
 
 .profile p {
@@ -87,8 +87,8 @@ main {
 }
 
 .profilePic {
-  height: 40px;
-  width: 40px;
+  height: 60px;
+  width: 60px;
   margin: auto;
   background-color: #bbb;
   border-radius: 50%;
@@ -134,8 +134,8 @@ main {
 .task {
   height: 70%;
   width: 100%;
-  border-radius: 4px;
-  border: 3px solid black;
+  border-radius: 12px;
+  background: #272b34;
 }
 
 .editor {
