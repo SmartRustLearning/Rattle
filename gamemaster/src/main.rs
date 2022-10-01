@@ -1,7 +1,7 @@
 #![deny(rust_2018_idioms)]
 use crate::sandbox::Sandbox;
-mod sandbox;
 mod logic;
+mod sandbox;
 
 use axum::{
     extract::{
@@ -12,6 +12,7 @@ use axum::{
     routing::get,
     Router,
 };
+use serde_json::json;
 use snafu::prelude::*;
 
 //use futures::{sink::SinkExt, stream::StreamExt};
@@ -93,7 +94,7 @@ async fn handle_socket(mut socket: WebSocket) {
                     if socket
                         .send(Message::Text(
                             // String::from(res.unwrap().stdout)
-                            serde_json::json!(res.unwrap())
+                            json!(res.unwrap()).to_string(),
                         ))
                         .await
                         .is_err()
