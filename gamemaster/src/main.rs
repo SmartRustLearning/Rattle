@@ -1,4 +1,5 @@
-use crate::sandbox::{Sandbox};
+#![deny(rust_2018_idioms)]
+use crate::sandbox::Sandbox;
 
 use std::default::Default;
 mod sandbox;
@@ -43,27 +44,9 @@ struct Config {
 
 impl Config {
     fn from_env() -> Self {
-        let root = 
-        // if let Some(root) = PLAYGROUND_UI_ROOT {
-        //     // Ensure it appears as an absolute path in logs to help user orient
-        //     // themselves about what directory the PLAYGROUND_UI_ROOT
-        //     // configuration is interpreted relative to.
-        //     let mut root = PathBuf::from(root);
-        //     if !root.is_absolute() {
-        //         if let Ok(current_dir) = std::env::current_dir() {
-        //             root = current_dir.join(root);
-        //         }
-        //     }
-        //     root
-        // } else 
-        {
-            // Note this is `env!` (compile time) while the above is
-            // `env::var_os` (run time). We know where the ui is expected to be
-            // relative to the source code that the server was compiled from.
-            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                .join("frontend")
-                .join("build")
-        };
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("frontend")
+            .join("build");
 
         let index_html = root.join("index.html");
         if index_html.exists() {
@@ -555,7 +538,7 @@ impl From<sandbox::Version> for MetaVersionResponse {
 }
 
 // TODO: do we need this ?
-// 
+//
 // impl From<gist::Gist> for MetaGistResponse {
 //     fn from(me: gist::Gist) -> Self {
 //         MetaGistResponse {
