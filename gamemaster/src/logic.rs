@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{Bytes, Read};
 use std::str::from_utf8;
@@ -15,7 +15,8 @@ pub struct Exercise {
 
 impl Exercise {
     pub fn from_path(path: &str) -> Self {
-        let ex_dir = fs::read_dir(std::path::Path::new(path)).expect("Exercise directory does not exist.");
+        let ex_dir =
+            fs::read_dir(std::path::Path::new(path)).expect("Exercise directory does not exist.");
         let mut libs = vec![];
         let mut tests = vec![];
         let mut tasks = vec![];
@@ -38,9 +39,10 @@ impl Exercise {
                 "info" => infos.push( (text, filename[4..filename.len()-3].parse::<u8>().expect("Error parsing digit.")) ),
                 "solution" => solutions.push( (text, filename[8..filename.len()-3].parse::<u8>().expect("Error parsing digit."))),
                 "config" => {
-                    config = Some(serde_json::from_slice( &text ).expect("Error parsing config file."))
-                },
-                _ => unreachable!()
+                    config =
+                        Some(serde_json::from_slice(&text).expect("Error parsing config file."))
+                }
+                _ => unreachable!(),
             }
         }
         libs.sort_by_key(|(_, k)| *k);
@@ -54,7 +56,7 @@ impl Exercise {
             tasks: tasks.into_iter().map(|(x, _)| x).collect(),
             infos: infos.into_iter().map(|(x, _)| x).collect(),
             solutions: solutions.into_iter().map(|(x, _)| x).collect(),
-            config: config.expect("no config found")
+            config: config.expect("no config found"),
         }
     }
 }
@@ -69,7 +71,12 @@ pub struct Task {
 
 impl Task {
     pub fn get_code_with(&self, code: String) -> String {
-        format!("{}\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap())
+        format!(
+            "{}\n{}\n\n{}",
+            from_utf8(&self.lib).unwrap(),
+            code,
+            from_utf8(&self.task).unwrap()
+        )
     }
 }
 
@@ -97,12 +104,27 @@ pub struct Match {
 
 impl Match {
     pub fn new(p: String, ex: Exercise) -> Self {
-        Self { state: MatchState::Waiting, players: (Some(Player { name: p, score: 500 }), None), exercise: ex, round: (None, None), past_rounds: vec![] }
+        Self {
+            state: MatchState::Waiting,
+            players: (
+                Some(Player {
+                    name: p,
+                    score: 500,
+                }),
+                None,
+            ),
+            exercise: ex,
+            round: (None, None),
+            past_rounds: vec![],
+        }
     }
 
     pub fn join(&mut self, p: String) {
         self.state = MatchState::InProgress;
-        self.players.1 = Some(Player { name: p, score: 560 });
+        self.players.1 = Some(Player {
+            name: p,
+            score: 560,
+        });
     }
 
     pub fn next_round(&self) -> Task {
