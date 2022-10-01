@@ -69,7 +69,9 @@ const socket = new WebSocket("ws://127.0.0.1:5000/websocket");
 socket.onopen = function () {
   console.info("[open] Connection established");
   console.info("Sending to server");
-  socket.send("This is some code...");
+  socket.send(this.value);
+  console.info("🦀 🦀 Compiling...");
+
 };
 
 socket.onmessage = function (event) {
@@ -86,6 +88,7 @@ function handleSave() {
     timeLeft,
     date: new Date(),
   });
+
   this.openModal();
   this.countdown?.abort();
 }
