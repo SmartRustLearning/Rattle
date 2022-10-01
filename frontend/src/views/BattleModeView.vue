@@ -63,10 +63,12 @@ import CodeEditor from "simple-code-editor";
 import { exercises } from "../data/exercises";
 import { timer } from "../util/countdown";
 import { padZero } from "../util/numbers";
+import axios from 'axios';
 
 const socket = new WebSocket("ws://127.0.0.1:5000/websocket");
 
 socket.onopen = function () {
+  console.log("websocket:")
   console.info("[open] Connection established");
   console.info("Sending to server");
   socket.send(this.value);
@@ -88,7 +90,6 @@ function handleSave() {
     timeLeft,
     date: new Date(),
   });
-
   this.openModal();
   this.countdown?.abort();
 }
@@ -114,6 +115,7 @@ export default {
         name: player.name,
         picture: player.picture,
       },
+      matchID: "",
     };
   },
   mounted() {
@@ -156,6 +158,12 @@ export default {
   },
   components: {
     CodeEditor,
+  },
+  created() {
+    //Request to get the matchID, so we can implement that into the websocket link
+    console.log("vue created");
+    this.matchID = axios.get('http://10.0.4.138:5000/match/find', {header: {'Content-Type': 'application/json'}});
+    console.log("matchID ==> ", this.matchID);
   },
 };
 </script>
