@@ -1,3 +1,4 @@
+use serde::Serialize;
 use serde_derive::Deserialize;
 use snafu::prelude::*;
 use std::{
@@ -965,7 +966,7 @@ impl BacktraceRequest for ExecuteRequest {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct ExecuteResponse {
     pub success: bool,
     pub stdout: String,
