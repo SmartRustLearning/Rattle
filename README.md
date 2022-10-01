@@ -1,6 +1,6 @@
 # Rattle: multiplayer code battles to have fun while learning Rust
 
-<img alt="Custom badge" src="https://img.shields.io/endpoint?label=I%20PLAY%20RATTLE%20%F0%9F%A6%80&logo=RUST&style=for-the-badge">
+<img alt="Custom badge" src="https://img.shields.io/endpoint?label=I%20PLAY%20RATTLE%20%F0%9F%A6%80&logo=RUST&style=for-the-badge&url=https%3A%2F%2Frattlegamebadge.free.beeceptor.com%2Fbadge">
 
 <img src="landing.png"  width="90%" height="30%">
 
