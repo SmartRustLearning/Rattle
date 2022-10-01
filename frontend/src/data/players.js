@@ -1,6 +1,6 @@
 import player0 from "../assets/Player0normalLucy.png";
 import player1 from "../assets/Player1normalTomi.png";
-import player2 from "../assets/Player2.png";
+import player2 from "../assets/Player2normal.png";
 import player3 from "../assets/Player3normalJessica.png";
 import player4 from "../assets/Player4normalLonny.png";
 import player5 from "../assets/Player5normalJacky.png";
