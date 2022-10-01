@@ -36,6 +36,7 @@
 
 <script>
 import CodeEditor from "simple-code-editor";
+import { exercises } from "../data/exercises";
 
 function handleSave() {
   console.log("handle save", this.value);
@@ -44,10 +45,7 @@ function handleSave() {
 export default {
   data() {
     return {
-      value: `const x: i32 = 34
-next
-        
-line nother line`,
+      value: exercises[0].starterCode,
     };
   },
   mounted() {
