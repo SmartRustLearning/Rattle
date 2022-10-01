@@ -10,29 +10,35 @@ use axum::{
     },
     response::{Html, IntoResponse, Json},
     routing::{get, post},
-    Router,
+    Extension, Router,
 };
 use logic::*;
+//use parking_lot::RwLock;
 use serde::Deserialize;
 use serde_json::json;
 use snafu::prelude::*;
+use std::collections::HashMap;
 use std::sync::Arc;
+use tokio::sync::RwLock;
+//use tokio::sync::RwLock;
 
 /**
  * Global state
  */
-struct State {
-    matches: Vec<Match>,
-}
+// #[derive(Debug)]
+// struct State {
+//     matches: Vec<Match>,
+// }
 
 #[derive(Deserialize)]
 struct MatchPayload {
     username: String,
 }
 
+use futures::future::{self, Either};
 //use futures::{sink::SinkExt, stream::StreamExt};
 // use std::{collections::HashSet, sync::Mutex};
-// use tokio::sync::broadcast;
+// use tokio::sync::broadc11ast;
 //use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 const DEFAULT_ADDRESS: &str = "127.0.0.1:5000";
@@ -43,27 +49,36 @@ async fn main() {
     // let env_logger_config = env_logger::Env::default().default_filter_or("info");
     // env_logger::Builder::from_env(env_logger_config).init();
 
-    let shared_state = Arc::new(State {
-        matches: Vec::default(),
-    });
+    // hasmap from gameId to (Player, WebSocket)
+    let shared_state = Arc::new(RwLock::new(HashMap::<String, Match>::from([(
+        "FOO".to_string(),
+        logic::Match::new("foo".to_string(), Exercise::default()),
+    )])));
 
     let app = Router::new()
         .route("/", get(index))
-        .route(
-            "/match/find",
-            post({
-                let shared_state = Arc::clone(&shared_state);
-                move |body| find_or_create_match(body, Arc::clone(&shared_state))
-            }),
-        )
-        .route(
-            "/match/join",
-            post({
-                let shared_state = Arc::clone(&shared_state);
-                move |body| join_match(body, Arc::clone(&shared_state))
-            }),
-        )
-        .route("/websocket", get(websocket_handler));
+        // .route(
+        //     "/match/find",
+        //     post(),
+        // )
+        .route("/match/0/join", get(websocket_handler))
+        .layer(Extension(shared_state));
+    // .route(
+    //     "/match/find",
+    //     post(
+    //         |Json(body): Json<MatchPayload>| -> Json<serde_json::Value> {
+    //             let shared_state = Arc::clone(&shared_state);
+    //             move |body| find_or_create_match(body, Arc::clone(&shared_state))
+    //         },
+    //     ),
+    // )
+    // .route(
+    //     "/match/join",
+    //     post({
+    //         let shared_state = Arc::clone(&shared_state);
+    //         move |body| join_match(body, Arc::clone(&shared_state))
+    //     }),
+    // )
 
     let addr = DEFAULT_ADDRESS
         .parse()
@@ -80,25 +95,18 @@ async fn index() -> Html<&'static str> {
     Html("Hello World!")
 }
 
-async fn find_or_create_match(
-    Json(payload): Json<MatchPayload>,
-    state: Arc<State>,
-) -> Json<serde_json::Value> {
+async fn foo() {}
+
+async fn find_match(Json(payload): Json<MatchPayload>, state: Arc<RwLock<HashMap<String, Match>>>) {
+    // -> Result<(), (StatusCode, String)> {
+    //-> Json<serde_json::Value> {
     let username = payload.username;
-
-    Json(json!({ "new_username": username }))
-}
-
-async fn join_match(
-    Json(payload): Json<MatchPayload>,
-    state: Arc<State>,
-) -> Json<serde_json::Value> {
-    let username = payload.username;
-
-    Json(json!({ "new_username": username }))
+    println!("Hello world!");
+    //    state.Json(json!({ "new_username": username }));
 }
 
 async fn websocket_handler(
+    Extension(shared_state): Extension<Arc<RwLock<HashMap<String, Match>>>>,
     ws: WebSocketUpgrade,
     user_agent: Option<TypedHeader<headers::UserAgent>>,
 ) -> impl IntoResponse {
@@ -106,74 +114,109 @@ async fn websocket_handler(
         tracing::debug!("`{}` connected", user_agent.as_str());
     }
 
-    ws.on_upgrade(handle_socket)
+    ws.on_upgrade(|mut socket| async move {
+        let rwguard = shared_state.read().await;
+        let sender = &rwguard.get("FOO").unwrap().sender;
+        let mut recv = sender.subscribe();
+        let next_in_msg = socket.recv();
+        let next_out_msg = recv.recv();
+
+        // TODO: filter messages
+        let either = {
+            futures::pin_mut!(next_in_msg);
+            futures::pin_mut!(next_out_msg);
+            match future::select(next_out_msg, next_in_msg).await {
+                Either::Left((v, _)) => Either::Left(v),
+                Either::Right((v, _)) => Either::Right(v),
+            }
+        };
+        match either {
+            Either::Left(v) => {
+                println!("{:?}", &v);
+                let v = v.unwrap();
+                socket
+                    .send(Message::Text(format!("{:?} {:?}", &v.0, &v.1)))
+                    .await
+                    .unwrap()
+            } // result
+            Either::Right(v) => {
+                println!("{:?}", &v);
+                let txt = match v.unwrap().unwrap() {
+                    Message::Text(s) => s,
+                    _ => panic!("ping pong close should be implemented!"),
+                };
+                sender.send(("FOO".to_string(), txt)).unwrap(); // if websocket client closes connection it returns none
+            }
+        };
+    }) //handle_socket)
 }
 
 async fn handle_socket(mut socket: WebSocket) {
-    while let Some(msg) = socket.recv().await {
-        if let Ok(msg) = msg {
-            match msg {
-                Message::Text(t) => {
-                    let sb = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
-                    println!("Code received!!: \n'''{:?}\n'''", t);
-                    let req = sandbox::CompileRequest {
-                        target: sandbox::CompileTarget::LlvmIr,
-                        channel: sandbox::Channel::Stable,
-                        crate_type: sandbox::CrateType::Binary,
-                        mode: sandbox::Mode::Debug,
-                        tests: false,
-                        code: t.to_string(),
-                        edition: None,
-                        backtrace: false,
-                    };
-                    let res = sb.compile(&req);
-                    // TODO: check if compilation was succesfull
 
-                    let req = sandbox::ExecuteRequest {
-                        channel: sandbox::Channel::Stable,
-                        crate_type: sandbox::CrateType::Binary,
-                        mode: sandbox::Mode::Debug,
-                        tests: false,
-                        code: t.to_string(),
-                        edition: None,
-                        backtrace: false,
-                    };
-                    let res = sb.execute(&req).await;
+    // while let Some(msg) = socket.recv().await {
+    //     if let Ok(msg) = msg {
+    //         match msg {
+    //             Message::Text(t) => {
+    //                 let sb = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
+    //                 println!("Code received!!: \n'''{:?}\n'''", t);
+    //                 let req = sandbox::CompileRequest {
+    //                     target: sandbox::CompileTarget::LlvmIr,
+    //                     channel: sandbox::Channel::Stable,
+    //                     crate_type: sandbox::CrateType::Binary,
+    //                     mode: sandbox::Mode::Debug,
+    //                     tests: false,
+    //                     code: t.to_string(),
+    //                     edition: None,
+    //                     backtrace: false,
+    //                 };
+    //                 let res = sb.compile(&req);
+    //                 // TODO: check if compilation was succesfull
 
-                    println!("{:?}", &res);
+    //                 let req = sandbox::ExecuteRequest {
+    //                     channel: sandbox::Channel::Stable,
+    //                     crate_type: sandbox::CrateType::Binary,
+    //                     mode: sandbox::Mode::Debug,
+    //                     tests: false,
+    //                     code: t.to_string(),
+    //                     edition: None,
+    //                     backtrace: false,
+    //                 };
+    //                 let res = sb.execute(&req).await;
 
-                    if socket
-                        .send(Message::Text(
-                            // String::from(res.unwrap().stdout)
-                            json!(res.unwrap()).to_string(),
-                        ))
-                        .await
-                        .is_err()
-                    {
-                        println!("client disconnected");
-                        return;
-                    }
-                    println!("tickp");
-                }
-                Message::Binary(_) => {
-                    println!("client sent binary data");
-                }
-                Message::Ping(_) => {
-                    println!("socket ping");
-                }
-                Message::Pong(_) => {
-                    println!("socket pong");
-                }
-                Message::Close(_) => {
-                    println!("client disconnected");
-                    return;
-                }
-            }
-        } else {
-            println!("client disconnected");
-            return;
-        }
-    }
+    //                 println!("{:?}", &res);
+
+    //                 if socket
+    //                     .send(Message::Text(
+    //                         // String::from(res.unwrap().stdout)
+    //                         json!(res.unwrap()).to_string(),
+    //                     ))
+    //                     .await
+    //                     .is_err()
+    //                 {
+    //                     println!("client disconnected");
+    //                     return;
+    //                 }
+    //                 println!("tickp");
+    //             }
+    //             Message::Binary(_) => {
+    //                 println!("client sent binary data");
+    //             }
+    //             Message::Ping(_) => {
+    //                 println!("socket ping");
+    //             }
+    //             Message::Pong(_) => {
+    //                 println!("socket pong");
+    //             }
+    //             Message::Close(_) => {
+    //                 println!("client disconnected");
+    //                 return;
+    //             }
+    //         }
+    //     } else {
+    //         println!("client disconnected");
+    //         return;
+    //     }
+    // }
 }
 
 #[derive(Debug, Snafu)]
