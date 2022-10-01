@@ -64,6 +64,18 @@ import { exercises } from "../data/exercises";
 import { timer } from "../util/countdown";
 import { padZero } from "../util/numbers";
 
+const socket = new WebSocket("ws://127.0.0.1:5000/websocket");
+
+socket.onopen = function () {
+  console.info("[open] Connection established");
+  console.info("Sending to server");
+  socket.send("This is some code...");
+};
+
+socket.onmessage = function (event) {
+  console.info(`[message] Data received from server: ${event.data}`);
+};
+
 import { player, opponents } from "../data/players";
 
 const duration = exercises[0].duration;
