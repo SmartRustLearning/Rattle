@@ -33,13 +33,60 @@
 </template>
 
 <script>
+import router from "../router";
+
+const findMatch = async () => {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/match/find", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: "Tomi",
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const joinMatch = async () => {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/match/join", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: "Tomi",
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default {
   data: () => ({
     modal: false,
   }),
   methods: {
-    openModal() {
+    async openModal() {
       this.modal = !this.modal;
+
+      // Post request to find match
+      await findMatch();
+
+      setTimeout(async () => {
+        // Post request to join match
+        await joinMatch();
+        router.push("/battle");
+      }, 3000);
     },
   },
 };
