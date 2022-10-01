@@ -31,7 +31,7 @@ npm run serve
 ### Build and run the server
 
 ```
-cd ui
+cd gamemaster
 cargo run
 ```
 
