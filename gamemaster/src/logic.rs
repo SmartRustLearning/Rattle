@@ -117,6 +117,7 @@ pub enum MatchState {
 
 #[derive(Debug)]
 pub struct Match {
+    pub id: String,
     pub state: MatchState,
     pub sender: Sender<(String, String)>,
     pub players: Vec<Player>,
@@ -125,10 +126,22 @@ pub struct Match {
     pub past_rounds: Vec<(PlayerRound, PlayerRound)>,
 }
 
+pub fn random_match_id() -> String {
+    use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
+
+    thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(10)
+        .map(char::from)
+        .collect()
+}
+
 impl Match {
     pub fn new(p: String, ex: Exercise) -> Self {
         let (tx, _) = broadcast::channel(32);
         Self {
+            id: random_match_id(),
             state: MatchState::Waiting,
             players: Vec::default(),
             exercise: ex,
@@ -138,18 +151,22 @@ impl Match {
         }
     }
 
-    pub fn join(&mut self, p: String) {
+    pub fn join(&mut self, p: String) -> Result<(), String> {
         if &self.players.len() <= &1 {
             self.state = MatchState::Waiting;
         } else if &self.players.len() >= &2 {
             self.state = MatchState::InProgress;
             // TODO: error: can't have more than 2 ppl atm!
+        } else {
+            return Err("More than 2 players!".to_string());
         }
 
         self.players.push(Player {
             name: p,
             score: 500,
         });
+
+        Ok(())
     }
 
     pub fn next_round(&self) -> Task {
