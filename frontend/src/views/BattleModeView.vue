@@ -13,10 +13,13 @@
         <p>Player 2</p>
       </div>
     </div>
-    <div class="editorContent">
-      <div class="editor"></div>
+    <div class="content">
+      <div class="left"><div class="editor"></div></div>
+      <div class="right">
+        <div class="task"></div>
+        <div class="btn"> <button class="button">submit</button></div>
+      </div>
     </div>
-    <div class="submit"><button class="button">submit</button></div>
   </main>
 </template>
 
@@ -27,7 +30,6 @@ export default {
 </script>
 
 <style scoped>
-
 main{
   display: block;
   width: 100%;
@@ -76,10 +78,31 @@ main{
   font-weight: bold;
 }
 
-.editorContent{
-  height: 500px;
+.content{
+  height: 550px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 50px;
+}
+
+.left{
+  height: 100%;
+  width: 100%;
   margin: 0;
-  padding: 60px 160px 60px 0;
+}
+
+.right{
+  height: 100%;
+  width: 400px;
+  margin-left: 20px;
+}
+
+.task{
+  height: 70%;
+  width: 100%;
+  border-radius: 4px;
+  border: 3px solid black;
 }
 
 .editor{
@@ -89,11 +112,15 @@ main{
   margin: 0;
 }
 
-.submit{
-  text-align: end;
+.btn{
+  width: auto;
+  height: auto;
+  display: flex;
 }
 
 .button{
   width: 150px;
+  margin: auto;
+  margin-top: 50px;
 }
 </style>
