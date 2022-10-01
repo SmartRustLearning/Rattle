@@ -6,7 +6,12 @@
         <p>Player 1</p>
       </div>
       <div class="timer">
-        <p>00:00.<span style="font-size: 1.6rem">00</span></p>
+        <p>
+          {{ time.minutes }}:{{ time.seconds }}.<span
+            style="font-size: 1.6rem"
+            >{{ time.millis }}</span
+          >
+        </p>
       </div>
       <div class="profile">
         <div class="profilePic"></div>
@@ -40,9 +45,18 @@
 <script>
 import CodeEditor from "simple-code-editor";
 import { exercises } from "../data/exercises";
+import { timer } from "../util/countdown";
+import { padZero } from "../util/numbers";
+
+const duration = exercises[0].duration;
 
 function handleSave() {
-  console.log("handle save", this.value);
+  const timeLeft = this.countdown.getTimeRemaining();
+  console.log("handle save", this.value, {
+    timeLeft,
+    date: new Date(),
+  });
+  this.countdown?.abort();
 }
 
 export default {
@@ -50,10 +64,36 @@ export default {
     return {
       value: exercises[0].starterCode,
       problem: exercises[0].problem,
+      time: {
+        millis: "00",
+        seconds: "00",
+        minutes: "00",
+      },
+      countdown: undefined,
     };
   },
   mounted() {
-    // Request match data from backend
+    // TODO: Request match data from backend
+    // Send start time!
+
+    const endTime = new Date(new Date().getTime() + 1000 * duration);
+    this.countdown = timer(
+      endTime,
+      (timeLeft) => {
+        this.time.seconds = padZero(timeLeft.seconds);
+        this.time.minutes = padZero(timeLeft.minutes);
+        this.time.millis = padZero(timeLeft.mill);
+      },
+      () => {
+        console.log("time over -> open modal to solution screen", {
+          date: new Date(),
+        });
+        this.countdown?.abort();
+      }
+    );
+  },
+  destroyed() {
+    this.countdown?.abort();
   },
   methods: {
     handleSave,

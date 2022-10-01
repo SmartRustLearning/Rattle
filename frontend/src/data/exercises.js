@@ -1,6 +1,7 @@
 export const exercises = [
   {
     id: 1,
+    duration: 30, // seconds
     problem: `Make sure it's printing the String "Number 2"`,
     starterCode: `fn main() {
     const x = 1;
