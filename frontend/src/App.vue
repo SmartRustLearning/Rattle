@@ -26,9 +26,6 @@ export default {
   /* background: bisque; */
 }
 
-.content{
-}
-
 .button {
   display: inline-block;
   border-radius: 4px;
