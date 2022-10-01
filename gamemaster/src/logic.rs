@@ -64,7 +64,7 @@ pub struct Task {
 
 impl Task {
     pub fn get_code_with(&self, code: String) -> String {
-        format!("{}\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap())
+        format!("{}\n{}\n\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap(), from_utf8(&self.test).unwrap())
     }
 }
 

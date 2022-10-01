@@ -1,0 +1,11 @@
+{
+    "name": "Speedy Constants",
+    "exercise": "3",
+    "topics": "Constants",
+    "task": "As fast as possible, fix this code so that it prints the string: \"Number 2\"",
+    "story": "Watch for the little things. Bust the compiler. It'll always beat you to it. Constants are not to be mistreated.",
+    "hints": [
+        "Hint 1",
+        "Hint 2"
+    ]
+}
