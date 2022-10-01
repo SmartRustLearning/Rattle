@@ -11,27 +11,119 @@ use std::{
     path::{Path, PathBuf},
 };
 
-const DEFAULT_ADDRESS: &str = "127.0.0.1";
+use axum::response::Html;
+
+use axum::{
+    extract::{
+        ws::{Message, WebSocket, WebSocketUpgrade},
+        TypedHeader,
+    },
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, get_service},
+    Router,
+};
+
+use futures::{sink::SinkExt, stream::StreamExt};
+use std::{
+    collections::HashSet,
+    sync::{Arc, Mutex},
+};
+use tokio::sync::broadcast;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+const DEFAULT_ADDRESS: &str = "127.0.0.1:5000";
 const DEFAULT_PORT: u16 = 5000;
 pub const PLAYGROUND_GITHUB_TOKEN: &str = "PLAYGROUND_GITHUB_TOKEN";
 pub const PLAYGROUND_UI_ROOT: &str = "PLAYGROUND_UI_ROOT";
 
+struct AppState {
+    user_set: Mutex<HashSet<String>>,
+    tx: broadcast::Sender<String>,
+}
+
 #[tokio::main]
 async fn main() {
-
     // Enable info-level logging by default. env_logger's default is error only.
     let env_logger_config = env_logger::Env::default().default_filter_or("info");
     env_logger::Builder::from_env(env_logger_config).init();
 
-    // let config = Config::from_env();
-    // server_axum::serve(config);
-    let sandbox = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
-    let req = sandbox::CompileRequest::default();
-    let res = sandbox.compile(&req);
-    
-    println!("{:?}", res.await);
+    let app = Router::new()
+        .route("/", get(index))
+        .route("/websocket", get(websocket_handler));
+
+    let addr = DEFAULT_ADDRESS
+        .parse()
+        .expect("Unable to parse socket addr!");
+    tracing::debug!("listening on {}", addr);
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }
 
+async fn index() -> Html<&'static str> {
+    Html("Hello World!")
+}
+
+async fn websocket_handler(
+    ws: WebSocketUpgrade,
+    user_agent: Option<TypedHeader<headers::UserAgent>>,
+) -> impl IntoResponse {
+    if let Some(TypedHeader(user_agent)) = user_agent {
+        println!("`{}` connected", user_agent.as_str());
+    }
+
+    ws.on_upgrade(handle_socket)
+}
+
+async fn handle_socket(mut socket: WebSocket) {
+    while let Some(msg) = socket.recv().await {
+        if let Ok(msg) = msg {
+            match msg {
+                Message::Text(t) => {
+                    let sb = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
+                    println!("Code received!!: \n'''{:?}\n'''", t);
+                    let req = sandbox::CompileRequest {
+                        target: sandbox::CompileTarget::LlvmIr,
+                        channel: sandbox::Channel::Stable,
+                        crate_type: sandbox::CrateType::Binary,
+                        mode: sandbox::Mode::Debug,
+                        tests: false,
+                        code: t.to_string(),
+                        edition: None,
+                        backtrace: false,
+                    };
+                    let res = sb.compile(&req);
+                    //    println!("{:?}", res.await);
+
+                    let req = sandbox::ExecuteRequest {
+                        channel: sandbox::Channel::Stable,
+                        crate_type: sandbox::CrateType::Binary,
+                        mode: sandbox::Mode::Debug,
+                        tests: false,
+                        code: t.to_string(),
+                        edition: None,
+                        backtrace: false,
+                    };
+                    let res = sb.execute(&req);
+
+                    println!("{:?}", res.await);
+                }
+                Message::Binary(_) => {
+                    println!("client sent binary data");
+                }
+                Message::Ping(_) => {
+                    println!("socket ping");
+                }
+                Message::Pong(_) => {
+                    println!("socket pong");
+                }
+                Message::Close(_) => {
+                    println!("client disconnected");
+                    return;
+                }
+            }
         } else {
             println!("client disconnected");
             return;
