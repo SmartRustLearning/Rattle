@@ -76,8 +76,8 @@ impl Exercise {
         }
         libs.sort_by_key(|(_, k)| *k);
         tests.sort_by_key(|(_, k)| *k);
-        tasks.sort_by_key(|(_, k)| *k);
-        infos.sort_by_key(|(_, k)| *k);
+        // tasks.sort_by_key(|(_, k)| *k);
+        // infos.sort_by_key(|(_, k)| *k);
         Self {
             libs: libs.into_iter().map(|(x, _)| x).collect(),
             tests: tests.into_iter().map(|(x, _)| x).collect(),
@@ -92,13 +92,14 @@ impl Exercise {
 pub struct Task {
     lib: Vec<u8>,
     test: Vec<u8>,
-    task: Vec<u8>,
-    info: Vec<u8>,
+    // task: Vec<u8>,
+    // info: Vec<u8>,
 }
 
 impl Task {
     pub fn get_code_with(&self, code: String) -> String {
-        format!("{}\n{}\n\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap(), from_utf8(&self.test).unwrap())
+        // format!("{}\n{}\n\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap(), from_utf8(&self.test).unwrap())
+        format!("{}\n\n{}", code, from_utf8(&self.test).unwrap())
     }
 }
 
@@ -158,8 +159,8 @@ impl Match {
         Task {
             lib: self.exercise.libs[nr].clone(),
             test: self.exercise.tests[nr].clone(),
-            task: self.exercise.tasks[nr].clone(),
-            info: self.exercise.infos[nr].clone(),
+            // task: self.exercise.tasks[nr].clone(),
+            // info: self.exercise.infos[nr].clone(),
         }
     }
 }
