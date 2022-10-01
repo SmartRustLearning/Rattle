@@ -6,7 +6,7 @@
         <p>Player 1</p>
       </div>
       <div class="timer">
-        <p>00:00.<span style="font-size:1.6rem">00</span></p>
+        <p>00:00.<span style="font-size: 1.6rem">00</span></p>
       </div>
       <div class="profile">
         <div class="profilePic"></div>
@@ -14,23 +14,56 @@
       </div>
     </div>
     <div class="content">
-      <div class="left"><div class="editor"></div></div>
+      <div class="left">
+        <code-editor
+          v-model="value"
+          :hide_header="true"
+          :languages="[['rust', 'Rust']]"
+          width="100%"
+          height="100%"
+          class="github_dark"
+        ></code-editor>
+      </div>
       <div class="right">
         <div class="task"></div>
-        <div class="btn"> <button class="button">submit</button></div>
+        <div class="btn">
+          <button class="button" @click="handleSave()">submit</button>
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <script>
-export default {
+import CodeEditor from "simple-code-editor";
 
+function handleSave() {
+  console.log("handle save", this.value);
 }
+
+export default {
+  data() {
+    return {
+      value: `const x: i32 = 34
+next
+        
+line nother line`,
+    };
+  },
+  mounted() {
+    // Request match data from backend
+  },
+  methods: {
+    handleSave,
+  },
+  components: {
+    CodeEditor,
+  },
+};
 </script>
 
 <style scoped>
-main{
+main {
   display: block;
   width: 100%;
   height: 100%;
@@ -38,17 +71,17 @@ main{
   margin-top: 30px;
 }
 
-.infoBar{
+.infoBar {
   display: flex;
   justify-content: space-between;
 }
 
-.profile{
+.profile {
   display: flex;
   font-size: 1.3rem;
 }
 
-.profile p{
+.profile p {
   margin: auto;
   padding-left: 10px;
 }
@@ -62,7 +95,7 @@ main{
   display: inline-block;
 }
 
-.timer{
+.timer {
   background: #e43717;
   display: inline-block;
   border-radius: 4px;
@@ -70,7 +103,7 @@ main{
   width: 150px;
 }
 
-.timer p{
+.timer p {
   text-align: center;
   color: white;
   font-size: 2.6rem;
@@ -78,7 +111,7 @@ main{
   font-weight: bold;
 }
 
-.content{
+.content {
   height: 550px;
   width: 100%;
   display: flex;
@@ -86,41 +119,60 @@ main{
   padding-top: 50px;
 }
 
-.left{
+.left {
   height: 100%;
   width: 100%;
   margin: 0;
 }
 
-.right{
+.right {
   height: 100%;
   width: 400px;
   margin-left: 20px;
 }
 
-.task{
+.task {
   height: 70%;
   width: 100%;
   border-radius: 4px;
   border: 3px solid black;
 }
 
-.editor{
+.editor {
   height: 100%;
   border-radius: 4px;
   background: rgb(200, 200, 200);
   margin: 0;
 }
 
-.btn{
+.btn {
   width: auto;
   height: auto;
   display: flex;
 }
 
-.button{
+.button {
   width: 150px;
   margin: auto;
   margin-top: 50px;
+}
+
+#editing,
+#highlighting {
+  /* Both elements need the same text and space styling so they are directly on top of each other */
+  margin: 10px;
+  padding: 10px;
+  border: 0;
+  width: calc(100% - 32px);
+  height: 150px;
+}
+
+#editing,
+#highlighting,
+#highlighting * {
+  /* Also add text styles to highlighting tokens */
+  font-size: 15pt;
+  font-family: monospace;
+  line-height: 20pt;
 }
 </style>
