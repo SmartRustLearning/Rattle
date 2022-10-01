@@ -57,13 +57,7 @@ There are some optional configuration parameters which you may set in a
 `.env` file. The server will run with no configuration, but in order 
 to load and save gists a GitHub token must be configured.
 
-### Build or download the containers
-
-```
-cd compiler
-./build.sh # If you want to test changes to the containers
-./fetch.sh # If you just want the current playground
-```
+You'll also need to be running a Docker container in the background.
 
 ## 🧑‍💻 Resource limits
 
