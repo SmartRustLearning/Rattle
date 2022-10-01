@@ -2,7 +2,9 @@
     "name": "Ludwig's Exercise",
     "exercise": "1",
     "difficulty": "easy", 
-    "topics": "Syntax",
+    "topics": [ 
+        "Syntax"
+    ],
     "task": "Make this code compile so that the test runs.",
     "hints": [
         "Hint 1",
