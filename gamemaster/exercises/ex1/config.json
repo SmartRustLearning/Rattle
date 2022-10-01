@@ -1,6 +1,11 @@
 {
-    "name": "Sample Ex",
+    "name": "Ludwig's Exercise",
+    "exercise": "1",
+    "difficulty": "easy", 
+    "topics": "Syntax",
+    "task": "Make this code compile so that the test runs.",
     "hints": [
-        "some hint for you"
+        "Hint 1",
+        "Hint 2"
     ]
 }

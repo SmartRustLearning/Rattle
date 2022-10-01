@@ -1,0 +1,12 @@
+{
+    "name": "Secret Sorcerer",
+    "exercise": "5",
+    "difficulty": "medium", 
+    "topics": "Macros",
+    "task": "Find the secret sauce and make this code compile.",
+    "story": "The borrow checker is Rust's \"secret sauce\" – it is tasked with enforcing a number of properties: \n That all variables are initialized before they are used.\n That you can't move the same value twice. \n That you can't move a value while it is borrowed. \n That you can't access a place while it is mutably borrowed (except through the reference). \n That you can't mutate a place while it is immutably borrowed.",
+    "hints": [
+        "Hint 1: Consider changing this to be a mutable reference: `&mut String`",
+        "Hint 2: The compiler statically guarantees that references always point to valid objects. That is, while references to an object exist, the object cannot be destroyed."
+    ]
+}
