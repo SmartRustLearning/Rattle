@@ -206,9 +206,6 @@ export default {
       this.opponent = players[localStorage.getItem("opponentIdxRound1")];
     }
 
-    // player
-    this.player = players[localStorage.getItem("playerIdx")];
-
     // exercise
     this.exerciseId = localStorage.getItem("exerciseId");
     const duration = exercises[this.exerciseId].duration;
