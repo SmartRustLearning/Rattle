@@ -51,7 +51,7 @@
             Computing results...
           </h2>
           <div style="display: flex">
-            <img src="../assets/Crab-unscreen.gif" alt="" />
+            <img src="../assets/Crab-unscreen.gif" alt="" class="modalImage" />
           </div>
         </div>
         <!-- Winner -->
@@ -64,11 +64,11 @@
               <img class="loserPic" :src="player.picture" />
             </div>
           </div>
-          <div>
-            <button class="button" @click="handleSave()">
-              <span>try again 🔁</span>
-            </button>
-            <button class="button" @click="handleSave()">goodbye 👋</button>
+          <div style="width:100%; display: flex; justify-content: space-around;">
+            <router-link to ="/" style="margin:auto;">
+              <button class="button">exit 🚮</button>
+            </router-link>
+            <button class="button" style="margin:auto;">next ➡️</button>
           </div>
           <div style="display: flex">
             <img src="../assets/Crab-unscreen.gif" alt="" />
@@ -90,6 +90,12 @@
             <p style="display: flex; text-align: left">
               {{ explanation }}
             </p>
+          </div>
+          <div style="width:100%; display: flex; justify-content: space-around;">
+            <router-link to ="/" style="margin:auto;">
+              <button class="button">exit 🚮</button>
+            </router-link>
+            <button class="button" style="margin:auto;">next ➡️</button>
           </div>
         </div>
       </div>
@@ -160,7 +166,7 @@ export default {
         minutes: "00",
       },
       countdown: undefined,
-      modal: false,
+      modal: true,
       showComputeResultsModal: false,
       opponent: {
         name: "???",
@@ -363,9 +369,13 @@ main {
   justify-content: flex-start;
 }
 
-.button {
+.btn .button {
   width: 150px;
   margin-top: 50px;
+}
+
+.button {
+  width: 150px;
 }
 
 .modalBackground {
@@ -379,6 +389,7 @@ main {
   justify-content: center;
   align-items: center;
   text-align: center;
+  z-index: 1000;
 }
 
 .modal {
@@ -404,5 +415,12 @@ main {
   100% {
     box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
   }
+}
+
+.modalImage{
+  width: 500px;
+  position: relative;
+  top: -75px;
+  right: -120px;
 }
 </style>
