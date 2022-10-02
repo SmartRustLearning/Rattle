@@ -65,7 +65,12 @@
             </div>
           </div>
           <div
-            style="width: 100%; display: flex; margin-top: 70px; justify-content: space-around"
+            style="
+              width: 100%;
+              display: flex;
+              margin-top: 70px;
+              justify-content: space-around;
+            "
           >
             <router-link to="/" style="margin: auto">
               <button class="button">exit 🚮</button>
