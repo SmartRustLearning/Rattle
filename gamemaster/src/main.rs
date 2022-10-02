@@ -115,6 +115,9 @@ async fn handle_socket(mut socket: WebSocket) {
             match msg {
                 Message::Text(t) => {
                     let sb = Sandbox::new().await.context(SandboxCreationSnafu).unwrap();
+                    let ex = Exercise::from_path("./exercises/ex1");
+                    let mut player_match = Match::new("P1".to_string(), ex);
+                    player_match.join("P2".to_string());
                     println!("Code received!!: \n'''{:?}\n'''", t);
                     let req = sandbox::CompileRequest {
                         target: sandbox::CompileTarget::LlvmIr,
@@ -122,7 +125,7 @@ async fn handle_socket(mut socket: WebSocket) {
                         crate_type: sandbox::CrateType::Binary,
                         mode: sandbox::Mode::Debug,
                         tests: false,
-                        code: t.to_string(),
+                        code: player_match.next_round().get_code_with(r#"println!("hello world")"#.to_string()),
                         edition: None,
                         backtrace: false,
                     };

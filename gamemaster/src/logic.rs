@@ -111,6 +111,7 @@ struct Config {
     task: String,
     story: String,
     hints: Vec<String>,
+    dotests: bool,
 }
 
 #[derive(Debug)]
