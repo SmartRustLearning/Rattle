@@ -152,6 +152,12 @@ function handleSave() {
   this.openModal();
   this.toggleComputeResultsModal();
   this.countdown?.abort();
+
+  const waitingTime =
+    localStorage.getItem("isSecondGame") == 1
+      ? parseInt(localStorage.getItem("computationTimeInMillisRound2"))
+      : parseInt(localStorage.getItem("computationTimeInMillisRound1"));
+
   setTimeout(() => {
     if (this.isWinner) {
       this.startConfetti();
@@ -160,7 +166,7 @@ function handleSave() {
       }, 4000);
     }
     this.toggleComputeResultsModal();
-  }, 3000);
+  }, waitingTime);
 }
 
 export default {
@@ -237,7 +243,7 @@ export default {
             }, 4000);
           }
           this.toggleComputeResultsModal();
-        }, 3000);
+        }, 2000);
       }
     );
 

@@ -98,11 +98,16 @@ export default {
       // Post request to find match
       await findMatch();
 
+      const loadingTime =
+        localStorage.getItem("isSecondGame") == 1
+          ? parseInt(localStorage.getItem("loadingTimeInMillisRound2"))
+          : parseInt(localStorage.getItem("loadingTimeInMillisRound1"));
+
       setTimeout(async () => {
         // Post request to join match
         await joinMatch();
         router.push("/battle");
-      }, 3000);
+      }, loadingTime);
     },
   },
 };

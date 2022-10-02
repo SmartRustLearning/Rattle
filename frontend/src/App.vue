@@ -15,6 +15,14 @@ export default {
     localStorage.setItem("opponentIdxRound1", 2);
     localStorage.setItem("opponentIdxRound2", 3);
 
+    // initial loading
+    localStorage.setItem("loadingTimeInMillisRound1", 3000);
+    localStorage.setItem("loadingTimeInMillisRound2", 7000);
+
+    // waiting for results loading
+    localStorage.setItem("computationTimeInMillisRound1", 6000);
+    localStorage.setItem("computationTimeInMillisRound2", 2000);
+
     // exercises
     localStorage.setItem("exerciseId", 0);
     localStorage.setItem("isSecondGame", 0);
