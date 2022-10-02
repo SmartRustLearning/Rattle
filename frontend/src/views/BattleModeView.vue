@@ -70,10 +70,9 @@
             <router-link to="/" style="margin: auto">
               <button class="button">exit 🚮</button>
             </router-link>
-            <button class="button" style="margin: auto">next ➡️</button>
-          </div>
-          <div style="display: flex">
-            <img src="../assets/Crab-unscreen.gif" alt="" />
+            <button class="button" style="margin: auto" @click="nextGame">
+              next ➡️
+            </button>
           </div>
         </div>
         <!-- Loser -->
