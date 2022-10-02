@@ -175,9 +175,13 @@ async fn websocket_handler(
                     match root.get("message_type").unwrap().as_str().unwrap() {
                         "AUTH_MSG" => {
                             // join plaeryr
-                            let game: &mut logic::Match =
-                                shared_state.write().await.get(&id).unwrap();
-                            game.join(root.get("username").unwrap().as_str().unwrap().to_string());
+                            let mut write = shared_state.write().await;
+                            let player_match = write.get_mut(&id).unwrap();
+
+                            // let game: &mut logic::Match =
+                            //     shared_state.write().await.get(&id).unwrap();
+                            player_match
+                                .join(root.get("username").unwrap().as_str().unwrap().to_string());
                         }
                         "SUBMIT" => {}
                         _ => {}

@@ -151,7 +151,10 @@ impl Match {
         }
     }
 
-    pub fn join(&mut self, p: String) -> Result<(), String> {
+    pub fn join<S>(&mut self, username: S) -> Result<(), String>
+    where
+        S: Into<String>,
+    {
         if &self.players.len() <= &1 {
             self.state = MatchState::Waiting;
         } else if &self.players.len() >= &2 {
@@ -162,7 +165,7 @@ impl Match {
         }
 
         self.players.push(Player {
-            name: p,
+            name: username.into(),
             score: 500,
         });
 
