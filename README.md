@@ -88,6 +88,7 @@ This project is inspired by:
 
 * [Rustlings](https://github.com/rust-lang/rustlings)
 * [Rust Playground](https://github.com/integer32llc/rust-playground)
+* Online Chess Games
 
 ## License
 

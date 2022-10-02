@@ -1,7 +1,11 @@
 <template>
   <main>
     <div class="content">
-      <h1>READY FOR <br /><span style="font-size:7.5rem;line-height:50%;">BATTLE!</span></h1>
+      <h1>
+        READY FOR <br /><span style="font-size: 7.5rem; line-height: 50%"
+          >BATTLE!</span
+        >
+      </h1>
       <img src="../assets/angryRust.png" alt="" />
     </div>
     <div class="buttonLayer">

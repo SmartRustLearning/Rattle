@@ -31,7 +31,7 @@
       </div>
       <div class="right">
         <h2 class="task-title">Your Task</h2>
-        <div class="task">
+        <div class="task" v-bind:class="{ pulse: shouldPulseTask }">
           <div class="task-text">{{ problem }}</div>
         </div>
       </div>
@@ -45,12 +45,51 @@
       style="width: 100vw; height: 100vh"
     >
       <div class="modalBackground" @click.stop>
-        <div class="modal">
+        <!-- Computing Results Modal -->
+        <div v-if="showComputeResultsModal" class="modal">
           <h2 style="margin-top: 80px; font-size: 2.4rem">
-            {{ explanation }}
+            Computing results...
           </h2>
           <div style="display: flex">
             <img src="../assets/Crab-unscreen.gif" alt="" />
+          </div>
+        </div>
+        <!-- Winner -->
+        <div v-else-if="isWinner" class="modal">
+          <div
+            style="display: flex; justify-content: space-evenly; padding: 10px"
+          >
+            <h2 class="modal-title">Congrats! You won! 🎉🤓</h2>
+            <div style="display: flex; justify-content: center">
+              <img class="loserPic" :src="player.picture" />
+            </div>
+          </div>
+          <div>
+            <button class="button" @click="handleSave()">
+              <span>try again 🔁</span>
+            </button>
+            <button class="button" @click="handleSave()">goodbye 👋</button>
+          </div>
+          <div style="display: flex">
+            <img src="../assets/Crab-unscreen.gif" alt="" />
+          </div>
+        </div>
+        <!-- Loser -->
+        <div v-else class="modal">
+          <div
+            style="display: flex; justify-content: space-evenly; padding: 10px"
+          >
+            <h2 class="modal-title">You weren't successful this time... 😢</h2>
+            <div style="display: flex; justify-content: center">
+              <img class="loserPic" :src="player.pictureLoser" />
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; padding: 10px">
+            <h3 style="margin: 0; text-align: left">Explanation</h3>
+            <p style="display: flex; text-align: left">
+              {{ explanation }}
+            </p>
           </div>
         </div>
       </div>
@@ -59,21 +98,25 @@
 </template>
 
 <script>
+import Vue from "vue";
+import VueConfetti from "vue-confetti";
+
 import CodeEditor from "simple-code-editor";
 import { exercises } from "../data/exercises";
 import { timer } from "../util/countdown";
 import { padZero } from "../util/numbers";
-import axios from 'axios';
+import axios from "axios";
+
+Vue.use(VueConfetti);
 
 const socket = new WebSocket("ws://127.0.0.1:5000/websocket");
 
 socket.onopen = function () {
-  console.log("websocket:")
+  console.log("websocket:");
   console.info("[open] Connection established");
   console.info("Sending to server");
   socket.send(this.value);
   console.info("🦀 🦀 Compiling...");
-
 };
 
 socket.onmessage = function (event) {
@@ -90,8 +133,19 @@ function handleSave() {
     timeLeft,
     date: new Date(),
   });
+
   this.openModal();
+  this.toggleComputeResultsModal();
   this.countdown?.abort();
+  setTimeout(() => {
+    if (this.isWinner) {
+      this.startConfetti();
+      setTimeout(() => {
+        this.stopConfetti();
+      }, 5000);
+    }
+    this.toggleComputeResultsModal();
+  }, 3000);
 }
 
 export default {
@@ -107,15 +161,17 @@ export default {
       },
       countdown: undefined,
       modal: false,
+      showComputeResultsModal: false,
       opponent: {
         name: "???",
         picture: undefined,
+        pictureLoser: undefined,
       },
-      player: {
-        name: player.name,
-        picture: player.picture,
-      },
+      player,
       matchID: "",
+      shouldPulseTask: true,
+      isWinner: false,
+      isComputingResults: true,
     };
   },
   mounted() {
@@ -143,17 +199,40 @@ export default {
           date: new Date(),
         });
         this.openModal();
+        this.toggleComputeResultsModal();
         this.countdown?.abort();
+        setTimeout(() => {
+          if (this.isWinner) {
+            this.startConfetti();
+            setTimeout(() => {
+              this.stopConfetti();
+            }, 4000);
+          }
+        }, 3000);
       }
     );
+
+    // Pulse task for first 5 seconds
+    setTimeout(() => {
+      this.shouldPulseTask = false;
+    }, 5000);
   },
   destroyed() {
     this.countdown?.abort();
   },
   methods: {
+    startConfetti() {
+      this.$confetti.start();
+    },
+    stopConfetti() {
+      this.$confetti.stop();
+    },
     handleSave,
     openModal() {
       this.modal = !this.modal;
+    },
+    toggleComputeResultsModal() {
+      this.showComputeResultsModal = !this.showComputeResultsModal;
     },
   },
   components: {
@@ -162,7 +241,9 @@ export default {
   created() {
     //Request to get the matchID, so we can implement that into the websocket link
     console.log("vue created");
-    this.matchID = axios.get('http://10.0.4.138:5000/match/find', {header: {'Content-Type': 'application/json'}});
+    this.matchID = axios.get("http://10.0.4.138:5000/match/find", {
+      header: { "Content-Type": "application/json" },
+    });
     console.log("matchID ==> ", this.matchID);
   },
 };
@@ -200,6 +281,13 @@ main {
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+  box-shadow: 0 0 50px #ccc;
+}
+
+.loserPic {
+  height: 120px;
+  width: 120px;
+  border-radius: 12px;
   box-shadow: 0 0 50px #ccc;
 }
 
@@ -297,5 +385,23 @@ main {
   height: 400px;
   border-radius: 12px;
   background: white;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 24pt;
+}
+
+.pulse {
+  animation: pulse-animation 1.5s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+  }
 }
 </style>
