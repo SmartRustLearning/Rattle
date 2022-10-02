@@ -9,6 +9,13 @@ export default {
   name: "App",
   components: {},
   mounted() {
+    // player
+    localStorage.setItem("playerIdxRound1", 0);
+    localStorage.setItem("playerIdxRound2", 1);
+    localStorage.setItem("opponentIdxRound1", 2);
+    localStorage.setItem("opponentIdxRound2", 3);
+
+    // exercises
     localStorage.setItem("exerciseId", 0);
     localStorage.setItem("isSecondGame", 0);
 

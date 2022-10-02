@@ -11,13 +11,12 @@ import player4Loser from "../assets/Player4-loser.png";
 import player5 from "../assets/Player5normalJacky.png";
 import player5Loser from "../assets/Player5-loser.png";
 
-export const player = {
-  name: "Tomi",
-  picture: player1,
-  pictureLoser: player1Loser,
-};
-
-export const opponents = [
+export const players = [
+  {
+    name: "Tomi",
+    picture: player1,
+    pictureLoser: player1Loser,
+  },
   {
     name: "Lucy",
     picture: player0,

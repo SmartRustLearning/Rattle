@@ -134,7 +134,7 @@ socket.onmessage = function (event) {
   console.info(`[message] Data received from server: ${event.data}`);
 };
 
-import { player, opponents } from "../data/players";
+import { players } from "../data/players";
 import router from "@/router";
 
 function handleSave() {
@@ -173,12 +173,8 @@ export default {
       countdown: undefined,
       modal: false,
       showComputeResultsModal: false,
-      opponent: {
-        name: "???",
-        picture: undefined,
-        pictureLoser: undefined,
-      },
-      player,
+      opponent: players[1],
+      player: players[0],
       matchID: "",
       shouldPulseTask: true,
       isWinner: false,
@@ -186,12 +182,27 @@ export default {
     };
   },
   mounted() {
-    // winner / loser
+    // players + winner / loser
     if (localStorage.getItem("isSecondGame") === 1) {
       this.isWinner = localStorage.getItem("isWinnerOfGame2");
+      this.player = players[localStorage.getItem("playerIdxRound2")];
+      this.opponent = players[localStorage.getItem("opponentIdxRound2")];
+
+      // // find opponent randomly
+      // const randomOpponent =
+      //   players[Math.floor(0 + Math.random() * (3 - 0 + 1))];
+      // this.opponent = {
+      //   name: randomOpponent.name,
+      //   picture: randomOpponent.picture,
+      // };
     } else {
       this.isWinner = localStorage.getItem("isWinnerOfGame1");
+      this.player = players[localStorage.getItem("playerIdxRound1")];
+      this.opponent = players[localStorage.getItem("opponentIdxRound1")];
     }
+
+    // player
+    this.player = players[localStorage.getItem("playerIdx")];
 
     // exercise
     this.exerciseId = localStorage.getItem("exerciseId");
@@ -200,14 +211,6 @@ export default {
     this.value = exercises[this.exerciseId ?? 0].starterCode;
     this.problem = exercises[this.exerciseId ?? 0].problem;
     this.explanation = exercises[this.exerciseId ?? 0].explanation;
-
-    // find opponent randomly
-    const randomOpponent =
-      opponents[Math.floor(0 + Math.random() * (4 - 0 + 1))];
-    this.opponent = {
-      name: randomOpponent.name,
-      picture: randomOpponent.picture,
-    };
 
     const endTime = new Date(new Date().getTime() + 1000 * duration);
     this.countdown = timer(
