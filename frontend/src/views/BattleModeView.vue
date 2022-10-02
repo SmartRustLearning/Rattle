@@ -95,7 +95,7 @@
             <router-link to ="/" style="margin:auto;">
               <button class="button">exit 🚮</button>
             </router-link>
-            <button class="button" style="margin:auto;">next ➡️</button>
+            <button class="button" style="margin:auto;" @click="nextGame">next ➡️</button>
           </div>
         </div>
       </div>
@@ -130,6 +130,7 @@ socket.onmessage = function (event) {
 };
 
 import { player, opponents } from "../data/players";
+import router from '@/router';
 
 function handleSave() {
   const timeLeft = this.countdown.getTimeRemaining();
@@ -244,6 +245,10 @@ export default {
     },
     toggleComputeResultsModal() {
       this.showComputeResultsModal = !this.showComputeResultsModal;
+    },
+    nextGame(){
+      localStorage.setItem("isSecondGame", true)
+      router.push('/')
     },
   },
   components: {
