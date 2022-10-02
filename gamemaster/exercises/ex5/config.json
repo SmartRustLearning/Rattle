@@ -1,0 +1,14 @@
+{
+    "name": "Speedy Macros",
+    "exercise": "5",
+    "difficulty": "hard", 
+    "topics": [
+        "Macros"
+    ],
+    "task": "Make me compile, without taking the macro out of the module!",
+    "story": "Macros are like magic. But unlike magic they have feelings that you can touch too. Just know how they work and you'll do wonders.",
+    "hints": [
+        "Hint 1",
+        "Hint 2"
+    ]
+}

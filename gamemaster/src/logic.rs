@@ -10,8 +10,8 @@ use tokio::sync::broadcast::Sender;
 pub struct Exercise {
     libs: Vec<Vec<u8>>,
     tests: Vec<Vec<u8>>,
-    tasks: Vec<Vec<u8>>,
-    infos: Vec<Vec<u8>>,
+    //tasks: Vec<Vec<u8>>,
+    //infos: Vec<Vec<u8>>,
     config: Config,
 }
 
@@ -21,8 +21,8 @@ impl Exercise {
             fs::read_dir(std::path::Path::new(path)).expect("Exercise directory does not exist.");
         let mut libs = vec![];
         let mut tests = vec![];
-        let mut tasks = vec![];
-        let mut infos = vec![];
+        //let mut tasks = vec![];
+        //let mut infos = vec![];
         let mut config = None;
         /* let load_files = |s| {
             ex_dir
@@ -40,28 +40,36 @@ impl Exercise {
             {
                 "lib" => libs.push((
                     text,
-                    filename[3..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
+                    if filename.len() > 6 {
+                        filename[3..filename.len() - 3]
+                            .parse::<u8>()
+                            .expect("Error parsing digit.")
+                    } else {
+                        0
+                    }
                 )),
                 "test" => tests.push((
                     text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
+                    if filename.len() > 7 {
+                        filename[4..filename.len() - 3]
+                            .parse::<u8>()
+                            .expect("Error parsing digit.")
+                    } else {
+                        0
+                    }
                 )),
-                "task" => tasks.push((
-                    text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
-                "info" => infos.push((
-                    text,
-                    filename[4..filename.len() - 3]
-                        .parse::<u8>()
-                        .expect("Error parsing digit."),
-                )),
+                // "task" => tasks.push((
+                //     text,
+                //     filename[4..filename.len() - 3]
+                //         .parse::<u8>()
+                //         .expect("Error parsing digit."),
+                // )),
+                // "info" => infos.push((
+                //     text,
+                //     filename[4..filename.len() - 3]
+                //         .parse::<u8>()
+                //         .expect("Error parsing digit."),
+                // )),
                 "config" => {
                     config =
                         Some(serde_json::from_slice(&text).expect("Error parsing config file."))
@@ -71,13 +79,13 @@ impl Exercise {
         }
         libs.sort_by_key(|(_, k)| *k);
         tests.sort_by_key(|(_, k)| *k);
-        tasks.sort_by_key(|(_, k)| *k);
-        infos.sort_by_key(|(_, k)| *k);
+        // tasks.sort_by_key(|(_, k)| *k);
+        // infos.sort_by_key(|(_, k)| *k);
         Self {
             libs: libs.into_iter().map(|(x, _)| x).collect(),
             tests: tests.into_iter().map(|(x, _)| x).collect(),
-            tasks: tasks.into_iter().map(|(x, _)| x).collect(),
-            infos: infos.into_iter().map(|(x, _)| x).collect(),
+            // tasks: tasks.into_iter().map(|(x, _)| x).collect(),
+            // infos: infos.into_iter().map(|(x, _)| x).collect(),
             config: config.expect("no config found"),
         }
     }
@@ -87,24 +95,24 @@ impl Exercise {
 pub struct Task {
     lib: Vec<u8>,
     test: Vec<u8>,
-    task: Vec<u8>,
-    info: Vec<u8>,
+    // task: Vec<u8>,
+    // info: Vec<u8>,
 }
 
 impl Task {
     pub fn get_code_with(&self, code: String) -> String {
-        format!(
-            "{}\n{}\n\n{}",
-            from_utf8(&self.lib).unwrap(),
-            code,
-            from_utf8(&self.task).unwrap()
-        )
+        // format!("{}\n{}\n\n{}\n\n{}", from_utf8(&self.lib).unwrap(), code, from_utf8(&self.task).unwrap(), from_utf8(&self.test).unwrap())
+        format!("{}\n\n{}", code, from_utf8(&self.test).unwrap())
     }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
     name: String,
+    exercise: usize,
+    topics: Vec<String>,
+    task: String,
+    story: String,
     hints: Vec<String>,
 }
 
@@ -177,8 +185,8 @@ impl Match {
         Task {
             lib: self.exercise.libs[nr].clone(),
             test: self.exercise.tests[nr].clone(),
-            task: self.exercise.tasks[nr].clone(),
-            info: self.exercise.infos[nr].clone(),
+            // task: self.exercise.tasks[nr].clone(),
+            // info: self.exercise.infos[nr].clone(),
         }
     }
 }

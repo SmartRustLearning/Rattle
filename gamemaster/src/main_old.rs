@@ -1,4 +1,3 @@
-mod playground;
 mod sandbox;
 mod logic;
 
