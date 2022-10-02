@@ -79,6 +79,9 @@ export default {
   data: () => ({
     modal: false,
   }),
+  mounted() {
+    localStorage.setItem("exerciseId", 0);
+  },
   methods: {
     async openModal() {
       this.modal = !this.modal;

@@ -1,6 +1,6 @@
 export const exercises = [
   {
-    id: 1,
+    id: 0,
     duration: 30, // seconds
     problem: `This code has a syntax error. Make sure it's printing the String "Number 2"`,
     starterCode: `fn main() {
@@ -14,7 +14,7 @@ export const exercises = [
     explanation: `Watch for the little things. Bust the compiler. It'll always beat you to it. Constants are not to be mistreated.In Rust the "const" keyword requires an explicit type!`,
   },
   {
-    id: 2,
+    id: 1,
     duration: 60,
     problem:
       'The Rust compiler will show you this error: "cannot borrow `x` as mutable more than once at a time". Make the code compile only by reordering the lines, but without adding, changing or removing any of them',

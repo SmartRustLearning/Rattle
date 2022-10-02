@@ -131,8 +131,6 @@ socket.onmessage = function (event) {
 
 import { player, opponents } from "../data/players";
 
-const duration = exercises[0].duration;
-
 function handleSave() {
   const timeLeft = this.countdown.getTimeRemaining();
   console.log("handle save", this.value, {
@@ -157,6 +155,7 @@ function handleSave() {
 export default {
   data() {
     return {
+      exerciseId: 0,
       value: exercises[0].starterCode,
       problem: exercises[0].problem,
       explanation: exercises[0].explanation,
@@ -183,6 +182,12 @@ export default {
   mounted() {
     // TODO: Request match data from backend
     // Send start time!
+    this.exerciseId = localStorage.getItem("exerciseId");
+    const duration = exercises[this.exerciseId].duration;
+
+    this.value = exercises[this.exerciseId ?? 0].starterCode;
+    this.problem = exercises[this.exerciseId ?? 0].problem;
+    this.explanation = exercises[this.exerciseId ?? 0].explanation;
 
     // find opponent randomly
     const randomOpponent =
@@ -249,8 +254,10 @@ export default {
     //Axios and Fetch!
     console.log("vue created");
     const headers = { "Content-Type": "application/json" };
-    this.matchID = axios.get('http://10.0.4.138:5000/match/find', {header: headers}).then(response => console.log(response));
-   /*  this.matchID = await fetch('http://10.0.4.138:5000/match/find', {headers}); */
+    this.matchID = axios
+      .get("http://10.0.4.138:5000/match/find", { header: headers })
+      .then((response) => console.log(response));
+    /*  this.matchID = await fetch('http://10.0.4.138:5000/match/find', {headers}); */
     console.log("matchID ==> ", this.matchID);
   },
 };
