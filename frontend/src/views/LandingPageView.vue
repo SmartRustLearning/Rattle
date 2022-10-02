@@ -81,6 +81,10 @@ export default {
   }),
   mounted() {
     localStorage.setItem("exerciseId", 0);
+
+    if (localStorage.getItem("isSecondGame")) {
+      this.openModal();
+    }
   },
   methods: {
     async openModal() {

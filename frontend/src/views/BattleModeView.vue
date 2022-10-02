@@ -64,11 +64,13 @@
               <img class="loserPic" :src="player.picture" />
             </div>
           </div>
-          <div style="width:100%; display: flex; justify-content: space-around;">
-            <router-link to ="/" style="margin:auto;">
+          <div
+            style="width: 100%; display: flex; justify-content: space-around"
+          >
+            <router-link to="/" style="margin: auto">
               <button class="button">exit 🚮</button>
             </router-link>
-            <button class="button" style="margin:auto;">next ➡️</button>
+            <button class="button" style="margin: auto">next ➡️</button>
           </div>
           <div style="display: flex">
             <img src="../assets/Crab-unscreen.gif" alt="" />
@@ -91,11 +93,15 @@
               {{ explanation }}
             </p>
           </div>
-          <div style="width:100%; display: flex; justify-content: space-around;">
-            <router-link to ="/" style="margin:auto;">
+          <div
+            style="width: 100%; display: flex; justify-content: space-around"
+          >
+            <router-link to="/" style="margin: auto">
               <button class="button">exit 🚮</button>
             </router-link>
-            <button class="button" style="margin:auto;" @click="nextGame">next ➡️</button>
+            <button class="button" style="margin: auto" @click="nextGame">
+              next ➡️
+            </button>
           </div>
         </div>
       </div>
@@ -130,7 +136,7 @@ socket.onmessage = function (event) {
 };
 
 import { player, opponents } from "../data/players";
-import router from '@/router';
+import router from "@/router";
 
 function handleSave() {
   const timeLeft = this.countdown.getTimeRemaining();
@@ -246,9 +252,9 @@ export default {
     toggleComputeResultsModal() {
       this.showComputeResultsModal = !this.showComputeResultsModal;
     },
-    nextGame(){
-      localStorage.setItem("isSecondGame", true)
-      router.push('/')
+    nextGame() {
+      localStorage.setItem("isSecondGame", true);
+      router.push("/");
     },
   },
   components: {
@@ -429,7 +435,7 @@ main {
   }
 }
 
-.modalImage{
+.modalImage {
   width: 500px;
   position: relative;
   top: -75px;
