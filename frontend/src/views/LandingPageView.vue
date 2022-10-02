@@ -24,7 +24,10 @@
     >
       <div class="modalBackground" @click.stop>
         <div class="modal">
-          <h2 style="margin-top: 80px; font-size: 2.4rem">
+          <h2 v-if="isSecondGame" style="margin-top: 80px; font-size: 2.4rem">
+            Next game is loading...
+          </h2>
+          <h2 v-else style="margin-top: 80px; font-size: 2.4rem">
             Game is loading...
           </h2>
           <div style="display: flex">
@@ -78,10 +81,12 @@ const joinMatch = async () => {
 export default {
   data: () => ({
     modal: false,
+    isSecondGame: false,
   }),
   mounted() {
     // second game
-    if (localStorage.getItem("isSecondGame") === 1) {
+    this.isSecondGame = localStorage.getItem("isSecondGame") == 1;
+    if (this.isSecondGame) {
       localStorage.setItem("exerciseId", 1);
       this.openModal();
     }

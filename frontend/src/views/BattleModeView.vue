@@ -100,9 +100,9 @@
           <div
             style="width: 100%; display: flex; justify-content: space-around"
           >
-            <router-link to="/" style="margin: auto">
-              <button class="button">exit 🚮</button>
-            </router-link>
+            <button class="button" style="margin: auto" @click="exitGame">
+              exit 🚮
+            </button>
             <button class="button" style="margin: auto" @click="nextGame">
               next ➡️
             </button>
@@ -188,8 +188,8 @@ export default {
   },
   mounted() {
     // players + winner / loser
-    if (localStorage.getItem("isSecondGame") === 1) {
-      this.isWinner = localStorage.getItem("isWinnerOfGame2") === 1;
+    if (localStorage.getItem("isSecondGame") == 1) {
+      this.isWinner = localStorage.getItem("isWinnerOfGame2") == 1;
       this.player = players[localStorage.getItem("playerIdxRound2")];
       this.opponent = players[localStorage.getItem("opponentIdxRound2")];
 
@@ -201,7 +201,7 @@ export default {
       //   picture: randomOpponent.picture,
       // };
     } else {
-      this.isWinner = localStorage.getItem("isWinnerOfGame1") === 1;
+      this.isWinner = localStorage.getItem("isWinnerOfGame1") == 1;
       this.player = players[localStorage.getItem("playerIdxRound1")];
       this.opponent = players[localStorage.getItem("opponentIdxRound1")];
     }
@@ -265,6 +265,10 @@ export default {
     },
     nextGame() {
       localStorage.setItem("isSecondGame", 1);
+      router.push("/");
+    },
+    exitGame() {
+      localStorage.setItem("isSecondGame", 0);
       router.push("/");
     },
   },
