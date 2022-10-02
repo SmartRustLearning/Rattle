@@ -184,7 +184,7 @@ export default {
   mounted() {
     // players + winner / loser
     if (localStorage.getItem("isSecondGame") === 1) {
-      this.isWinner = localStorage.getItem("isWinnerOfGame2");
+      this.isWinner = localStorage.getItem("isWinnerOfGame2") === 1;
       this.player = players[localStorage.getItem("playerIdxRound2")];
       this.opponent = players[localStorage.getItem("opponentIdxRound2")];
 
@@ -196,7 +196,7 @@ export default {
       //   picture: randomOpponent.picture,
       // };
     } else {
-      this.isWinner = localStorage.getItem("isWinnerOfGame1");
+      this.isWinner = localStorage.getItem("isWinnerOfGame1") === 1;
       this.player = players[localStorage.getItem("playerIdxRound1")];
       this.opponent = players[localStorage.getItem("opponentIdxRound1")];
     }
