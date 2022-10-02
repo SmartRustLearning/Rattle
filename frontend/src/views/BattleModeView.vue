@@ -240,10 +240,11 @@ export default {
   },
   created() {
     //Request to get the matchID, so we can implement that into the websocket link
+    //Axios and Fetch!
     console.log("vue created");
-    this.matchID = axios.get("http://10.0.4.138:5000/match/find", {
-      header: { "Content-Type": "application/json" },
-    });
+    const headers = { "Content-Type": "application/json" };
+    this.matchID = axios.get('http://10.0.4.138:5000/match/find', {header: headers}).then(response => console.log(response));
+   /*  this.matchID = await fetch('http://10.0.4.138:5000/match/find', {headers}); */
     console.log("matchID ==> ", this.matchID);
   },
 };
