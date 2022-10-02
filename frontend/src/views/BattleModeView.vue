@@ -157,7 +157,7 @@ function handleSave() {
       this.startConfetti();
       setTimeout(() => {
         this.stopConfetti();
-      }, 5000);
+      }, 4000);
     }
     this.toggleComputeResultsModal();
   }, 3000);
@@ -239,6 +239,7 @@ export default {
               this.stopConfetti();
             }, 4000);
           }
+          this.toggleComputeResultsModal();
         }, 3000);
       }
     );
