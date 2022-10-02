@@ -1,9 +1,12 @@
+use axum::extract::ws::WebSocket;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{Bytes, Read};
 use std::str::from_utf8;
+use tokio::sync::broadcast;
+use tokio::sync::broadcast::Sender;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Exercise {
     libs: Vec<Vec<u8>>,
     tests: Vec<Vec<u8>>,
@@ -88,7 +91,7 @@ impl Exercise {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Task {
     lib: Vec<u8>,
     test: Vec<u8>,
@@ -103,8 +106,8 @@ impl Task {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct Config {
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct Config {
     name: String,
     exercise: usize,
     topics: Vec<String>,
@@ -113,8 +116,8 @@ struct Config {
     hints: Vec<String>,
 }
 
-#[derive(Debug)]
-enum MatchState {
+#[derive(Debug, Clone)]
+pub enum MatchState {
     Waiting,
     InProgress,
     Finished,
@@ -122,36 +125,59 @@ enum MatchState {
 
 #[derive(Debug)]
 pub struct Match {
-    state: MatchState,
-    players: (Option<Player>, Option<Player>),
-    exercise: Exercise,
-    round: (Option<PlayerRound>, Option<PlayerRound>),
-    past_rounds: Vec<(PlayerRound, PlayerRound)>,
+    pub id: String,
+    pub state: MatchState,
+    pub sender: Sender<(String, String)>,
+    pub players: Vec<Player>,
+    pub exercise: Exercise,
+    pub round: (Option<PlayerRound>, Option<PlayerRound>),
+    pub past_rounds: Vec<(PlayerRound, PlayerRound)>,
+}
+
+pub fn random_match_id() -> String {
+    use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
+
+    thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(10)
+        .map(char::from)
+        .collect()
 }
 
 impl Match {
     pub fn new(p: String, ex: Exercise) -> Self {
+        let (tx, _) = broadcast::channel(32);
         Self {
+            id: random_match_id(),
             state: MatchState::Waiting,
-            players: (
-                Some(Player {
-                    name: p,
-                    score: 500,
-                }),
-                None,
-            ),
+            players: Vec::default(),
             exercise: ex,
+            sender: tx,
             round: (None, None),
             past_rounds: vec![],
         }
     }
 
-    pub fn join(&mut self, p: String) {
-        self.state = MatchState::InProgress;
-        self.players.1 = Some(Player {
-            name: p,
-            score: 560,
+    pub fn join<S>(&mut self, username: S) -> Result<(), String>
+    where
+        S: Into<String>,
+    {
+        if &self.players.len() <= &1 {
+            self.state = MatchState::Waiting;
+        } else if &self.players.len() >= &2 {
+            self.state = MatchState::InProgress;
+            // TODO: error: can't have more than 2 ppl atm!
+        } else {
+            return Err("More than 2 players!".to_string());
+        }
+
+        self.players.push(Player {
+            name: username.into(),
+            score: 500,
         });
+
+        Ok(())
     }
 
     pub fn next_round(&self) -> Task {
@@ -165,14 +191,14 @@ impl Match {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct Player {
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Player {
     name: String,
     score: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct PlayerRound {
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct PlayerRound {
     time: usize,
     code: Vec<u8>,
 }

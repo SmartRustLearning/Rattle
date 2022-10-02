@@ -38,7 +38,7 @@ todo!()
 
 ## 🤖 Development
 
-### Build the UI
+### Build and serve the UI on port 8080
 
 ```
 cd frontend
@@ -46,7 +46,7 @@ npm i
 npm run serve
 ```
 
-### Build and run the server
+### Build and run the server on port 5000
 
 ```
 cd gamemaster
