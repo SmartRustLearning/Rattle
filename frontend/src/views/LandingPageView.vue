@@ -80,9 +80,9 @@ export default {
     modal: false,
   }),
   mounted() {
-    localStorage.setItem("exerciseId", 0);
-
-    if (localStorage.getItem("isSecondGame")) {
+    // second game
+    if (localStorage.getItem("isSecondGame") === 1) {
+      localStorage.setItem("exerciseId", 1);
       this.openModal();
     }
   },

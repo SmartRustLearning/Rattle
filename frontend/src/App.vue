@@ -8,6 +8,14 @@
 export default {
   name: "App",
   components: {},
+  mounted() {
+    localStorage.setItem("exerciseId", 0);
+    localStorage.setItem("isSecondGame", 0);
+
+    // winner & loser
+    localStorage.setItem("isWinnerOfGame1", 1);
+    localStorage.setItem("isWinnerOfGame2", 0);
+  },
 };
 </script>
 

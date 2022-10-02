@@ -172,7 +172,7 @@ export default {
         minutes: "00",
       },
       countdown: undefined,
-      modal: true,
+      modal: false,
       showComputeResultsModal: false,
       opponent: {
         name: "???",
@@ -187,8 +187,14 @@ export default {
     };
   },
   mounted() {
-    // TODO: Request match data from backend
-    // Send start time!
+    // winner / loser
+    if (localStorage.getItem("isSecondGame") === 1) {
+      this.isWinner = localStorage.getItem("isWinnerOfGame2");
+    } else {
+      this.isWinner = localStorage.getItem("isWinnerOfGame1");
+    }
+
+    // exercise
     this.exerciseId = localStorage.getItem("exerciseId");
     const duration = exercises[this.exerciseId].duration;
 
